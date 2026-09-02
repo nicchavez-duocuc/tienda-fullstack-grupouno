@@ -121,4 +121,30 @@ function cargarProductos() {
     });
 }
 
+// Función para agregar al carrito usando localStorage
+function agregarAlCarrito(codigo) {
+    // 1. Buscamos el producto en el arreglo por su código
+    const producto = productos.find(p => p.codigo === codigo);
+    if (!producto) return;
+
+    // 2. Obtenemos el carrito actual guardado, o creamos uno vacío si no existe
+    let carrito = JSON.parse(localStorage.getItem('carritoGamer')) || [];
+
+    // 3. Verificamos si el producto ya está en el carrito para sumar la cantidad
+    const index = carrito.findIndex(p => p.codigo === codigo);
+    if (index !== -1) {
+        carrito[index].cantidad += 1;
+    } else {
+        // Clonamos el objeto producto y le añadimos la propiedad cantidad
+        let productoAlCarrito = { ...producto, cantidad: 1 };
+        carrito.push(productoAlCarrito);
+    }
+
+    // 4. Guardamos el carrito actualizado en el navegador
+    localStorage.setItem('carritoGamer', JSON.stringify(carrito));
+    
+    // 5. Pequeño aviso al usuario
+    alert(`¡${producto.nombre} fue agregado a tu carrito!`);
+}
+
 document.addEventListener('DOMContentLoaded', cargarProductos);
