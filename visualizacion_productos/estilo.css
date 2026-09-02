@@ -1,0 +1,84 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Colores de la propuesta de diseño */
+body {
+    background-color: #000000; /* Fondo Principal */
+    color: #ffffff; /* Texto en blanco para contrastar */
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 15px;
+}
+
+nav a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #39FF14; /* Acento Verde Neón */
+}
+
+.hero-section {
+    text-align: center;
+    padding: 50px 20px;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #333;
+}
+
+.btn-primary {
+    display: inline-block;
+    background-color: #1E90FF; /* Azul Eléctrico */
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    margin-top: 15px;
+    border-radius: 5px;
+}
+
+.btn-primary:hover {
+    background-color: #39FF14; /* Verde Neón */
+    color: #000;
+}
+
+/* Grilla de productos */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+}
+
+.product-card {
+    background-color: #111;
+    border: 1px solid #333;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+}
+
+.product-card img {
+    max-width: 100%;
+    height: auto;
+}
+
+.product-card h4 {
+    color: #1E90FF;
+    margin: 10px 0;
+}
+
+footer {
+    text-align: center;
+    padding: 20px;
+    background-color: #111;
+    border-top: 2px solid #39FF14;
+    margin-top: 40px;
+}
