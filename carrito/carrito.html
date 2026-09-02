@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL-UP GAMER | Carrito</title>
+    <!-- Revisa que este nombre coincida con el archivo CSS dentro de la carpeta 'carrito' -->
+    <link rel="stylesheet" href="estilo_carrito.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <h1>LEVEL-UP GAMER</h1>
+        </div>
+        <a href="../visualizacion_productos/index.html" class="btn-volver">⬅ Volver a la Tienda</a>
+    </header>
+
+    <main>
+        <section class="cart-section">
+            <h2>Tu Carrito de Compras 🛒</h2>
+            
+            <div id="cart-container">
+                <!-- Los productos se inyectarán aquí mediante JS -->
+            </div>
+            
+            <div class="cart-summary">
+                <h3>Total a pagar: $<span id="cart-total">0</span></h3>
+                <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar Carrito</button>
+                <button class="btn-pagar" onclick="alert('¡Gracias por tu compra en LEVEL-UP GAMER!')">Proceder al Pago</button>
+            </div>
+        </section>
+    </main>
+
+    <script src="script_carrito.js"></script>
+</body>
+</html>
