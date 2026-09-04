@@ -67,6 +67,7 @@ nav a:hover {
     padding: 20px;
 }
 
+/* es para el cuadro negro que rodea los productos*/ 
 .product-card {
     background-color: #111;
     border: 1px solid #333;
@@ -76,8 +77,20 @@ nav a:hover {
 }
 
 .product-card img {
-    max-width: 100%;
-    height: auto;
+    width: 100%; 
+    height: 220px; 
+    object-fit: contain; 
+    background-color: #ffffff; 
+    border-radius: 5px; 
+    padding: 10px; 
+    
+    /*Define que cualquier cambio en la imagen tome 0.3 segundos y sea suave */
+    transition: transform 0.3s ease; 
+}
+
+/*Efecto al pasar el mouse sobre la tarjeta a peticion del profe david*/
+.product-card:hover img {
+    transform: scale(1.08); /* Agranda la imagen un 8% */
 }
 
 .product-card h4 {
@@ -91,4 +104,134 @@ footer {
     background-color: #111;
     border-top: 2px solid #39FF14;
     margin-top: 40px;
+}
+
+/* Filtros de categorías */
+.category-filters {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap; /* Permite que los botones bajen de línea en celulares */
+    padding: 0 20px;
+}
+
+.filter-btn {
+    background-color: #111; /* Fondo oscuro */
+    color: #1E90FF; /* Texto Azul Eléctrico */
+    border: 2px solid #1E90FF;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #1a1a1a;
+    box-shadow: 0 0 10px #1E90FF; /* Brillo sutil al pasar el mouse */
+}
+
+/* Estilo para el botón de la categoría que está seleccionada actualmente */
+.filter-btn.active {
+    background-color: #1E90FF;
+    color: #fff;
+    border-color: #1E90FF;
+}
+
+
+/*----------------------------------------------------------------------------------------------*/
+
+
+/* Estilos para el Modal de Producto Agregado */
+.modal-overlay {
+    display: none; /* Oculto por defecto */
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background-color: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.8);
+    color: #fff;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+}
+
+.close-modal {
+    background: none; 
+    border: none;
+    color: #aaa; 
+    font-size: 24px; 
+    cursor: pointer;
+}
+
+.close-modal:hover { color: #fff; }
+
+.modal-body {
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    margin-bottom: 25px;
+}
+
+.modal-body img {
+    width: 90px; 
+    height: 90px; 
+    object-fit: contain;
+    background-color: #fff; 
+    border-radius: 5px; 
+    padding: 5px;
+}
+
+.modal-price {
+    font-size: 22px; 
+    font-weight: bold; 
+    color: #1E90FF; 
+    margin-top: 8px;
+}
+
+.modal-footer {
+    display: flex; 
+    gap: 15px; 
+    justify-content: flex-end;
+}
+
+.btn-seguir {
+    background-color: transparent; 
+    border: 1px solid #39FF14; 
+    color: #39FF14;
+    padding: 10px 15px; 
+    border-radius: 5px; 
+    cursor: pointer; 
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.btn-seguir:hover { background-color: rgba(57, 255, 20, 0.1); }
+
+.btn-ir-carro {
+    background-color: #39FF14; 
+    color: #000; 
+    text-decoration: none;
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    font-weight: bold;
+    display: inline-block;
 }

@@ -18,11 +18,25 @@
         <section class="hero-section">
             <h2>Bienvenido a la mejor tienda Gamer de Chile</h2>
             <p>Encuentra consolas, accesorios, computadores y sillas especializadas.</p>
-            <a href="productos.html" class="btn-primary">Ver productos</a>
+            
         </section>
 
         <section class="products-section">
             <h3>Productos Destacados</h3>
+            <div class="category-filters">
+                <button class="filter-btn active" onclick="filtrarProductos('Todos', this)">Todos</button>
+                <button class="filter-btn" onclick="filtrarProductos('Consolas', this)">Consolas</button>
+                <button class="filter-btn" onclick="filtrarProductos('Computadores Gamers', this)">Computadores Gamers</button>
+                <button class="filter-btn" onclick="filtrarProductos('Accesorios', this)">Accesorios</button>
+                <button class="filter-btn" onclick="filtrarProductos('Sillas Gamers', this)">Sillas Gamers</button>
+                <button class="filter-btn" onclick="filtrarProductos('Pantallas', this)">Pantallas</button>
+                <button class="filter-btn" onclick="filtrarProductos('Mouse', this)">Mouse</button>
+                <button class="filter-btn" onclick="filtrarProductos('Mousepad', this)">Mousepad</button>
+                <button class="filter-btn" onclick="filtrarProductos('Juegos de Mesa', this)">Juegos de Mesa</button>
+                <button class="filter-btn" onclick="filtrarProductos('Poleras Personalizadas', this)">Poleras Personalizadas</button>
+                <button class="filter-btn" onclick="filtrarProductos('Polerones Gamers Personalizados', this)">Polerones Gamers Personalizados</button>
+
+            </div>
             <div id="product-list" class="grid-container">
                 </div>
         </section>
@@ -36,6 +50,27 @@
             <button class="btn-secondary">Suscribirse</button>
         </div>
     </footer>
+
+    
+    <div id="modal-agregado" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #39FF14;">✅ Producto agregado al carro</h3>
+                <button class="close-modal" onclick="cerrarModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <img id="modal-img" src="" alt="Producto">
+                <div class="modal-details">
+                    <h4 id="modal-nombre">Nombre del Producto</h4>
+                    <p id="modal-precio" class="modal-price">$0</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-seguir" onclick="cerrarModal()">Seguir comprando</button>
+                <a href="../carrito/carrito.html" class="btn-ir-carro">Ir al carro</a>
+            </div>
+        </div>
+    </div>
 
     <script src="Script.js"></script>
 </body>
