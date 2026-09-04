@@ -26,10 +26,24 @@
             <div class="cart-summary">
                 <h3>Total a pagar: $<span id="cart-total">0</span></h3>
                 <button class="btn-vaciar" onclick="vaciarCarrito()">Vaciar Carrito</button>
-                <button class="btn-pagar" onclick="alert('¡Gracias por tu compra en LEVEL-UP GAMER!')">Proceder al Pago</button>
+                <button class="btn-pagar" onclick="procederPago()">Proceder al Pago</button>
             </div>
         </section>
     </main>
+
+    <!-- Modal de Confirmación para Carrito -->
+    <div id="modal-confirmacion" class="modal-overlay">
+        <div class="modal-confirm-content">
+            <button class="close-modal" onclick="cerrarModalConfirmacion()">✕</button>
+            <div id="modal-icono" class="modal-icon">⚠️</div>
+            <h3 id="modal-mensaje" style="color: white; margin-bottom: 20px;">¿Estás seguro?</h3>
+            
+            <div class="modal-actions">
+                <button class="btn-cancelar" onclick="cerrarModalConfirmacion()">Cancelar</button>
+                <button id="btn-confirmar-accion" class="btn-accion" onclick="ejecutarAccion()">Confirmar</button>
+            </div>
+        </div>
+    </div>
 
     <script src="script_carrito.js"></script>
 </body>

@@ -33,7 +33,7 @@ function cargarCarrito() {
                 <p style="margin-top: 5px;">Subtotal: <strong>$${subtotal.toLocaleString('es-CL')}</strong></p>
             </div>
     
-            <!-- NUEVO: Contenedor de botones de cantidad -->
+            <!-- Contenedor de botones de cantidad -->
             <div class="quantity-controls">
                 <button class="btn-qty" onclick="disminuirCantidad(${index})">-</button>
                 <span class="qty-display">${producto.cantidad}</span>
@@ -58,15 +58,104 @@ function eliminarDelCarrito(index) {
     cargarCarrito(); // Vuelve a cargar la vista
 }
 
-// Función para vaciar todo el carrito
-function vaciarCarrito() {
-    if(confirm("¿Estás seguro de que deseas vaciar tu carrito?")) {
-        localStorage.removeItem('carritoGamer');
-        cargarCarrito();
+
+
+let accionPendiente = null; // Variable para recordar qué botón presionaste
+
+// Función maestra MEJORADA: Ahora acepta un parámetro 'esAlerta'
+function abrirModalConfirmacion(mensaje, icono, textoBoton, colorFondo, colorTexto, funcionAEjecutar, esAlerta = false) {
+    document.getElementById('modal-mensaje').innerText = mensaje;
+    document.getElementById('modal-icono').innerText = icono;
+    
+    const btnConfirmar = document.getElementById('btn-confirmar-accion');
+    const btnCancelar = document.querySelector('.btn-cancelar'); // Buscamos el botón cancelar
+    
+    btnConfirmar.innerText = textoBoton;
+    btnConfirmar.style.backgroundColor = colorFondo;
+    btnConfirmar.style.color = colorTexto;
+    
+    // Si es solo un aviso (alerta), escondemos el botón de Cancelar
+    if (esAlerta) {
+        btnCancelar.style.display = 'none';
+    } else {
+        btnCancelar.style.display = 'inline-block'; // Lo mostramos si es una pregunta
     }
+    
+    accionPendiente = funcionAEjecutar;
+    document.getElementById('modal-confirmacion').style.display = 'flex';
 }
 
-// Agrega estas nuevas funciones al final de tu script_carrito.js
+function cerrarModalConfirmacion() {
+    document.getElementById('modal-confirmacion').style.display = 'none';
+    accionPendiente = null;
+}
+
+function ejecutarAccion() {
+    if (accionPendiente) accionPendiente(); // Ejecuta la función si existe
+    cerrarModalConfirmacion(); // Cierra el modal de todas formas
+}
+
+// --- FUNCIONES DE LOS BOTONES ---
+
+function vaciarCarrito() {
+    let carrito = JSON.parse(localStorage.getItem('carritoGamer')) || [];
+    
+    if (carrito.length === 0) {
+        // En lugar del alert, llamamos al modal en modo "Alerta" (con el true al final)
+        abrirModalConfirmacion(
+            "Tu carrito ya está vacío. ¡Ve a la tienda a buscar algo genial!", 
+            "🛒", "Entendido", "#1E90FF", "white", null, true
+        );
+        return;
+    }
+
+    // Modal en modo "Pregunta" (dos botones)
+    abrirModalConfirmacion(
+        "¿Confirmas que quieres vaciar tu carro de compras?", 
+        "⚠️", "Vaciar Carrito", "#ff3333", "white", 
+        function() {
+            localStorage.removeItem('carritoGamer');
+            cargarCarrito();
+        },
+        false
+    );
+}
+
+function procederPago() {
+    let carrito = JSON.parse(localStorage.getItem('carritoGamer')) || [];
+    
+    if (carrito.length === 0) {
+        // Modal de aviso si está vacío
+        abrirModalConfirmacion(
+            "No tienes productos en tu carrito. ¡Agrega algunos antes de comprar!", 
+            "🛒", "Entendido", "#1E90FF", "white", null, true
+        );
+        return;
+    }
+
+    // Modal de pregunta para confirmar la compra
+    abrirModalConfirmacion(
+        "¿Confirmas que deseas proceder con el pago de tus productos?", 
+        "💳", "Comprar", "#39FF14", "black", 
+        function() {
+            // ¡Magia! Al confirmar, lanzamos OTRO modal de aviso indicando el éxito
+            abrirModalConfirmacion(
+                "¡Pago procesado con éxito! Gracias por elegir LEVEL-UP GAMER.",
+                "✅", "Genial", "#39FF14", "black",
+                function() {
+                    // Solo limpiamos el carrito después de que cierre el mensaje de éxito
+                    localStorage.removeItem('carritoGamer');
+                    cargarCarrito();
+                },
+                true // Es una alerta de éxito
+            );
+        },
+        false
+    );
+}
+
+
+// esta aumenta la cantidad del producto
 function aumentarCantidad(index) {
     let carrito = JSON.parse(localStorage.getItem('carritoGamer')) || [];
     carrito[index].cantidad += 1;
