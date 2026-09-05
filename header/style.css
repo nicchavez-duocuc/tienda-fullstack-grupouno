@@ -1,0 +1,36 @@
+* {
+  margin: 0;
+}
+
+.titulo {
+  font-size: 30px;
+  float: left;
+  color: #f3eeee;
+}
+
+.botones, .cart {
+  padding-top: 6px;
+  color: #f3eeee;
+}
+
+.botones a, .cart a {
+  text-decoration: none;
+  color: #f3eeee;
+}
+
+.botones {
+  float: inline-start;
+  margin-left: 35px;
+}
+
+.cart {
+  float: inline-end;
+}
+
+.cabeza {
+  background-color: #242222;
+  padding: 20px 30px 50px 30px;
+  border-bottom: 5px solid #12e747;
+  position: sticky;
+  top: 0;
+}
