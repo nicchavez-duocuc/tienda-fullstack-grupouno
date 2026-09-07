@@ -245,6 +245,101 @@ function agregarAlCarrito(codigo) {
 }
 
 
+
+
+// Variables de estado global
+let categoriaSeleccionada = 'Todos';
+let textoBusqueda = '';
+
+// Captura lo que escribe el usuario y busca en TODO el catálogo
+function filtrarPorTexto(texto) {
+    textoBusqueda = texto;
+
+    // Si la persona escribe algo, se cambia la categoría a 'Todos' 
+    // para no ocultar productos que pertenezcan a otras categorías
+    if (texto.trim() !== '') {
+        categoriaSeleccionada = 'Todos';
+        
+        // Marcamos visualmente el botón "Todos" como activo
+        const botones = document.querySelectorAll('.filter-btn');
+        botones.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent.trim() === 'Todos') {
+                btn.classList.add('active');
+            }
+        });
+    }
+
+    renderizarProductos();
+}
+
+// Cambia de categoría y limpia el texto de búsqueda si presionas un botón
+function filtrarProductos(categoria, elementoBoton) {
+    categoriaSeleccionada = categoria;
+    
+    // Si selecciona una categoría manual, limpiamos el campo de texto
+    const inputBuscador = document.getElementById('input-buscador');
+    if (inputBuscador) {
+        inputBuscador.value = '';
+        textoBusqueda = '';
+    }
+
+    // Actualiza el botón activo
+    const botones = document.querySelectorAll('.filter-btn');
+    botones.forEach(btn => btn.classList.remove('active'));
+    
+    if (elementoBoton) {
+        elementoBoton.classList.add('active');
+    }
+    
+    renderizarProductos();
+}
+
+// Dibuja los productos en pantalla
+function renderizarProductos() {
+    const productList = document.getElementById('product-list');
+    if (!productList) return;
+
+    productList.innerHTML = '';
+
+    // Filtrado
+    const productosFiltrados = productos.filter(producto => {
+        const coincideCategoria = (categoriaSeleccionada === 'Todos' || producto.categoria === categoriaSeleccionada);
+        const coincideNombre = producto.nombre.toLowerCase().includes(textoBusqueda.toLowerCase().trim());
+        
+        return coincideCategoria && coincideNombre;
+    });
+
+    // Si borra el texto de búsqueda o no hay texto, se vuelven a mostrar todos los productos del catálogo
+    if (productosFiltrados.length === 0) {
+        productList.innerHTML = `
+            <div class="no-results">
+                <p>⚠️ No se encontraron productos que coincidan con "<strong>${textoBusqueda}</strong>".</p>
+            </div>
+        `;
+        return;
+    }
+
+    // Dibujar tarjetas de catálogo completo
+    productosFiltrados.forEach(producto => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        card.innerHTML = `
+            <img src="${producto.imagen}" alt="${producto.nombre}">
+            <h4>${producto.nombre}</h4>
+            <p>Categoría: ${producto.categoria}</p>
+            <p style="font-weight: bold; color: #1E90FF; font-size: 1.1rem; margin-top: 5px;">
+                $${producto.precio.toLocaleString('es-CL')}
+            </p>
+            <button onclick="agregarAlCarrito('${producto.codigo}')" style="background-color: #39FF14; color: black; border: none; padding: 10px; cursor: pointer; margin-top:10px; width:100%; border-radius:5px; font-weight:bold;">Añadir al Carrito</button>
+        `;
+        
+        productList.appendChild(card);
+    });
+}
+
+
 // esta funcion muestra el mensaje del producto que se agrego al carrito con su imagen, nombre y precio
 function mostrarModalAgregado(producto) {
     // Inyecta los datos del producto seleccionado en el HTML del modal
@@ -260,5 +355,8 @@ function cerrarModal() {
     // Vuelve a ocultar el modal
     document.getElementById('modal-agregado').style.display = 'none';
 }
+
+
+
 
 document.addEventListener('DOMContentLoaded', cargarProductos);

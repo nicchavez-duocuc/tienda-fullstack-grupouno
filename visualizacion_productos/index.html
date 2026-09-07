@@ -22,7 +22,21 @@
         </section>
 
         <section class="products-section">
-            <h3>Productos Destacados</h3>
+            <h3 style="text-align: center; margin-bottom: 20px;">Productos Destacados</h3>
+
+            
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    id="input-buscador" 
+                    class="search-input" 
+                    placeholder="Buscar producto por nombre..."
+                    oninput="filtrarPorTexto(this.value)"
+                >
+            </div>
+
+            
             <div class="category-filters">
                 <button class="filter-btn active" onclick="filtrarProductos('Todos', this)">Todos</button>
                 <button class="filter-btn" onclick="filtrarProductos('Consolas', this)">Consolas</button>
@@ -35,10 +49,10 @@
                 <button class="filter-btn" onclick="filtrarProductos('Juegos de Mesa', this)">Juegos de Mesa</button>
                 <button class="filter-btn" onclick="filtrarProductos('Poleras Personalizadas', this)">Poleras Personalizadas</button>
                 <button class="filter-btn" onclick="filtrarProductos('Polerones Gamers Personalizados', this)">Polerones Gamers Personalizados</button>
-
             </div>
-            <div id="product-list" class="grid-container">
-                </div>
+
+            
+            <div id="product-list" class="grid-container"></div>
         </section>
     </main>
 
