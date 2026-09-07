@@ -294,3 +294,103 @@ footer {
     border: 1px dashed #333;
     border-radius: 8px;
 }
+
+/* Indica que la imagen de la tarjeta es clickeable */
+.product-card img {
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+/* --- ESTILOS DE RESEÑAS --- */
+.reviews-section {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #1a1a1a;
+    border-radius: 10px;
+    border: 1px solid #333;
+}
+
+.review-form-container {
+    background-color: #252525;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #333;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #ddd;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #444;
+    background-color: #121212;
+    color: #fff;
+    font-family: inherit;
+}
+
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 15px;
+}
+
+.review-card {
+    background-color: #252525;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #39FF14;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+.review-stars {
+    color: #FFD700;
+    font-size: 1.1rem;
+}
+
+.review-product {
+    font-size: 0.85rem;
+    color: #1E90FF;
+    margin-bottom: 8px;
+}
+
+.review-comment {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin-bottom: 8px;
+    color: #ddd;
+}
+
+.review-date {
+    display: block;
+    text-align: right;
+    color: #777;
+    font-size: 0.75rem;
+}
