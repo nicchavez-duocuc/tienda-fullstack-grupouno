@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Administración - LEVEL-UP GAMER</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background: #121212; color: #fff; }
+        .form-container, .table-container { background: #1e1e1e; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        input, select, button { margin: 5px 0; padding: 10px; width: 100%; box-sizing: border-box; }
+        button { cursor: pointer; font-weight: bold; }
+        .btn-add { background: #12e747; color: #000; border: none; }
+        .btn-edit { background: #ffca28; color: #000; border: none; padding: 5px 10px; width: auto; }
+        .btn-delete { background: #ff4d4d; color: #fff; border: none; padding: 5px 10px; width: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
+        th { background: #2a2a2a; }
+        img { width: 50px; height: auto; }
+    </style>
+</head>
+<body>
+
+    <h1>Panel de Administración de Productos</h1>
+
+    <!-- Formulario para Crear y Editar -->
+    <div class="form-container">
+        <h2 id="form-title">Agregar Nuevo Producto</h2>
+        <form id="form-producto">
+            <input type="hidden" id="producto-index" value="">
+            <input type="text" id="codigo" placeholder="Código (ej. P013)" required>
+            <input type="text" id="nombre" placeholder="Nombre del producto" required>
+            <input type="number" id="precio" placeholder="Precio" required>
+            <input type="text" id="categoria" placeholder="Categoría" required>
+            <input type="url" id="imagen" placeholder="URL de la imagen" required>
+            <input type="number" id="stock" placeholder="Stock disponible" required>
+            <button type="submit" id="btn-guardar" class="btn-add">Guardar Producto</button>
+            <button type="button" id="btn-cancelar" style="display:none; background:#888;">Cancelar Edición</button>
+        </form>
+    </div>
+
+    <!-- Tabla de Productos -->
+    <div class="table-container">
+        <h2>Inventario Actual</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Imagen</th>
+                    <th>Código</th>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-productos"></tbody>
+        </table>
+    </div>
+
+    <!-- 1. Script del catálogo original (donde está const productos = [...]) -->
+    <script src="../productos/js/productos.js"></script>
+    
+    <!-- 2. Script de administración que reutiliza la variable "productos" -->
+    <script src="admin.js"></script>
+</body>
+</html>
