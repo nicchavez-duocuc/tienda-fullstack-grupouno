@@ -1,4 +1,27 @@
+
+function esUsuarioDuoc() {
+    // 1. Revisar usuarioActivo (Objeto guardado tras iniciar sesión o registrarse)
+    const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo'));
+    if (usuarioActivo && usuarioActivo.correo) {
+        return usuarioActivo.correo.toLowerCase().trim().endsWith('@duocuc.cl');
+    }
+
+    // 2. Revisar lista de usuarios guardados
+    const usuariosGuardados = JSON.parse(localStorage.getItem('UsuariosGamer')) || [];
+    if (usuariosGuardados.length > 0) {
+        const ultimo = usuariosGuardados[usuariosGuardados.length - 1];
+        if (ultimo && ultimo.correo) {
+            return ultimo.correo.toLowerCase().trim().endsWith('@duocuc.cl');
+        }
+    }
+
+    return false;
+}
+
+
 // Función principal para renderizar el carrito
+
+
 
 function cargarCarrito() {
     const cartContainer = document.getElementById('cart-container');
@@ -9,27 +32,48 @@ function cargarCarrito() {
 
     // Validamos si está vacío
     if (carrito.length === 0) {
-        cartContainer.innerHTML = '<p style="text-align: center; padding: 20px;">Tu carrito está vacío. ¡Ve a la tienda a buscar algo genial!</p>';
-        cartTotal.innerText = '0';
+        if (cartContainer) {
+            cartContainer.innerHTML = '<p style="text-align: center; padding: 20px;">Tu carrito está vacío. ¡Ve a la tienda a buscar algo genial!</p>';
+        }
+        if (cartTotal) cartTotal.innerText = '0';
         return;
     }
 
+    const esDuoc = esUsuarioDuoc();
+
     // Limpiamos el contenedor y calculamos el total
-    cartContainer.innerHTML = '';
+    if (cartContainer) cartContainer.innerHTML = '';
     let total = 0;
 
     carrito.forEach((producto, index) => {
-        const subtotal = producto.precio * producto.cantidad;
+        let precioBase = producto.precioOriginal || producto.precio;
+
+        let precioFinal = precioBase;
+        if (esDuoc) {
+            precioFinal = Math.round(precioBase * 0.80);
+        }
+
+        // CORREGIDO: Usamos precioFinal para el subtotal y total
+        const subtotal = precioFinal * producto.cantidad;
         total += subtotal;
+
+        let HTMLPrecio = `<p>Precio Unitario: $${precioFinal.toLocaleString('es-CL')}</p>`;
+        if (esDuoc) {
+            HTMLPrecio = `
+                <p>Precio Unitario: <span style="text-decoration: line-through; color: #aaa;">$${precioBase.toLocaleString('es-CL')}</span> 
+                <strong style="color: #39FF14;">$${precioFinal.toLocaleString('es-CL')} (20% OFF)</strong></p>
+            `;
+        }
 
         const item = document.createElement('div');
         item.className = 'cart-item';
         
+        // CORREGIDO: Se inyecta ${HTMLPrecio} en lugar del texto estático
         item.innerHTML = `
             <img src="${producto.imagen}" alt="${producto.nombre}">
             <div class="item-details">
-                <h4>${producto.nombre}</h4>
-                <p>Precio Unitario: $${producto.precio.toLocaleString('es-CL')}</p>
+                <h4 style="color: #39FF14;">${producto.nombre}</h4>
+                ${HTMLPrecio}
                 <p style="margin-top: 5px;">Subtotal: <strong>$${subtotal.toLocaleString('es-CL')}</strong></p>
             </div>
     
@@ -43,11 +87,13 @@ function cargarCarrito() {
             <button class="btn-remove" onclick="eliminarDelCarrito(${index})">Eliminar</button>
         `;
         
-        cartContainer.appendChild(item);
+        if (cartContainer) cartContainer.appendChild(item);
     });
 
-    // Actualizamos el texto del total
-    cartTotal.innerText = total.toLocaleString('es-CL');
+    // Actualizamos el texto del total una sola vez
+    if (cartTotal) {
+        cartTotal.innerText = total.toLocaleString('es-CL');
+    }
 }
 
 // Función para eliminar un producto específico
@@ -138,15 +184,15 @@ function procederPago() {
         "¿Confirmas que deseas proceder con el pago de tus productos?", 
         "💳", "Comprar", "#39FF14", "black", 
         function() {
-            // ¡Magia! Al confirmar, lanzamos OTRO modal de aviso indicando el éxito
+            // 1. Limpiamos el carrito automáticamente de inmediato
+            localStorage.removeItem('carritoGamer');
+            cargarCarrito();
+
+            // 2. Mostramos el mensaje de éxito (con el fondo ya vacío)
             abrirModalConfirmacion(
                 "¡Pago procesado con éxito! Gracias por elegir LEVEL-UP GAMER.",
                 "✅", "Genial", "#39FF14", "black",
-                function() {
-                    // Solo limpiamos el carrito después de que cierre el mensaje de éxito
-                    localStorage.removeItem('carritoGamer');
-                    cargarCarrito();
-                },
+                null, // Como ya vaciamos el carro, no se necesita ejecutar nada al cerrar
                 true // Es una alerta de éxito
             );
         },

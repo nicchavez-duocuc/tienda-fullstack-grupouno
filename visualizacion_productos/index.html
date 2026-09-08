@@ -8,8 +8,13 @@
 </head>
 <body>
     <header>
-        <div class="logo-container">
+        <div class="logo-container" style="display: flex; align-items: center; gap: 20px;">
             <h1>LEVEL-UP GAMER</h1>
+            
+            <button onclick="abrirModalImagen()" style="background-color: transparent; border: 2px solid #39FF14; color: #39FF14; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#39FF14'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#39FF14';">
+                🗺️ Ver Mapa
+            </button>
+
         </div>
         <a href="../carrito/carrito.html" class="btn-primary" style="background-color: #39FF14; color: black; font-weight: bold;">Ver Carrito 🛒</a>
     </header>
@@ -102,6 +107,14 @@
 
     <footer>
         <p>&copy; 2024 LEVEL-UP GAMER. Todos los derechos reservados.</p>
+        
+        <!-- contacto de mi whatsApp porque nesecitabamos uno XD -->
+        <div style="margin: 20px 0;">
+            <a href="https://wa.me/56944487210" target="_blank" style="color: #39FF14; text-decoration: none; font-size: 1.2rem; font-weight: bold; transition: color 0.3s;">
+                🟢 Contáctanos por WhatsApp: +56 9 4448 7210
+            </a>
+        </div>
+
         <div class="newsletter">
             <label for="email-news">Únete a nuestro Newsletter:</label>
             <input type="email" id="email-news" placeholder="Ingresa tu correo">
@@ -148,6 +161,18 @@
                 <button class="btn-seguir" onclick="cerrarModalDetalle()">Cerrar</button>
                 <button id="modal-detalle-btn-agregar" class="btn-ir-carro" style="border: none; cursor: pointer;">Añadir al Carrito</button>
             </div>
+        </div>
+    </div>
+
+    <!-- modal de imagen del mapa -->
+    <div id="modal-imagen-extra" class="modal-overlay">
+        <div class="modal-content" style="text-align: center; position: relative; padding: 30px 20px 20px; max-width: 600px;">
+            <!-- Botón de cierre X -->
+            <button class="close-modal" onclick="cerrarModalImagen()" style="position: absolute; top: 10px; right: 15px; font-size: 28px;">✕</button>
+            
+            <h3 style="color: #39FF14; margin-bottom: 15px;">Promo Exclusiva</h3>
+            <!-- Imagen a mostrar -->
+            <img src="mapa_Level-UP.jpg" alt="Imagen Especial" style="width: 100%; border-radius: 8px; border: 1px solid #333;">
         </div>
     </div>
 
