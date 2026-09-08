@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:ital,wght@1,700;1,900&family=Poppins:wght@400;500;600&display=swap');
+
+/* Reset Básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+/* Fondo de pantalla completo con la misma imagen pero más oscura (85% opacidad negra) */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), 
+                url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat fixed;
+    color: #ffffff;
+    padding: 20px;
+}
+
+/* Título superior de la página */
+header {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.2rem;
+    font-style: italic;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1.5px #1E90FF;
+    text-shadow: 0 0 12px rgba(30, 144, 255, 0.7);
+    letter-spacing: 2px;
+    margin-bottom: 30px;
+    text-align: center;
+    text-transform: uppercase;
+}
+
+main {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+/* Tarjeta contenedora con la imagen original e intensidad intacta */
+.login-container {
+    background: linear-gradient(rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.75)), 
+                url('https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+    border: 1.5px solid #1E90FF;
+    border-radius: 28px;
+    padding: 50px 45px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 0 35px rgba(30, 144, 255, 0.4),
+                inset 0 0 15px rgba(30, 144, 255, 0.15);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.login-container h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: #1E90FF;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px rgba(30, 144, 255, 0.8);
+}
+
+#login-form {
+    width: 100%;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 22px;
+}
+
+.input-group label {
+    font-size: 0.95rem;
+    color: #ffffff;
+    margin-bottom: 8px;
+    font-weight: bold;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1.5px solid #1E90FF;
+    border-radius: 12px;
+    color: #39FF14;
+    font-family: monospace, sans-serif;
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.input-group input:focus {
+    border-color: #39FF14;
+    box-shadow: 0 0 12px rgba(57, 255, 20, 0.6);
+}
+
+/* Botón Iniciar Sesión */
+#btn-submit {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 30px;
+    background: #12e747;
+    color: #000000;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    box-shadow: 0 0 18px rgba(57, 255, 20, 0.4);
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+}
+
+#btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba(57, 255, 20, 0.8);
+}
+
+.register-link {
+    text-align: center;
+}
+
+#link-crear-cuenta {
+    color: #1E90FF;
+    text-decoration: none;
+    font-size: 0.95rem;
+    font-weight: bold;
+    transition: all 0.2s ease;
+}
+
+#link-crear-cuenta:hover {
+    color: #39FF14;
+    text-shadow: 0 0 8px rgba(57, 255, 20, 0.8);
+}

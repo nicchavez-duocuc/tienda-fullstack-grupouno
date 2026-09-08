@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=derive-width,initial-scale=1.0">
+    <title> Inicio Sesion - Comunidad Gamer</title>
+    <link rel="stylesheet" href="estilos_login.css">
+
+</head>
+    
+<body>
+    <header>Bienvenido a la comunidad Gamer</header>
+
+    <main>
+        <section class="login-container">
+            
+            <h2>Inicio Sesion</h2>
+
+            <form id="login-form">
+                <div class="input-group">
+                    <label for="email">Gmail</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="tucorreo@gmail.com"
+                        required
+                    >
+                </div>
+                
+                <div class="input-group">
+                    <label for="clave">Clave</label>
+                    <input
+                        type="password"
+                        id="clave"
+                        name="clave"
+                        placeholder="*********"
+                        required
+                    >
+
+
+                </div>
+
+                <button type="submit" id="btn-submit">Iniciar Sesion</button>
+
+            </form>
+
+            <div class="register-link">
+                <a href="registrar.html" id="link-crear-cuenta">Crear Cuenta &rarr;</a>
+            </div>
+        </section>
+    </main>
+    <script src=usuarios.js></script>
+</body>
+</html>

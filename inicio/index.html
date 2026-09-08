@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL-UP GAMER | Home</title>
+    <link rel="stylesheet" href="estilo.css">
+    <link rel="stylesheet" href="../../tienda-fullstack-grupouno-nico/header/style.css">
+</head>
+<body>
+	<header>
+		<div class="cabeza">
+			<h1 class="titulo">LEVEL-UP GAMER</h1>
+			<p class="botones"><a href="" target="_blank">Inicio</a> │ <a href="../visualizacion_productos/index.html" target="_blank">Productos</a> │ <a href="https://www.w3.org/" target="_blank">Nosotros</a> │ <a href="../blogs/index.html" target="_blank">Blogs</a> │ <a href="https://www.w3.org/" target="_blank">Contacto</a></p>
+			<p class="cart"><a href="../carrito/carrito.html">Carrito</a></p>
+		</div>
+	</header>
+
+    <main>
+        <section class="hero-section">
+            <h2>Bienvenido a la mejor tienda Gamer de Chile</h2>
+            <p>Encuentra consolas, accesorios, computadores y sillas especializadas.</p>
+        </section>
+
+        <div class="imagen-inicio">
+            <div class="imagen-texto">
+                <h1>LEVEL-UP GAMER</h1>
+                <p>Encuentra lo mejor en consolas, PC Gamers, accesorios e eSports con envío a todo Chile. Eleva tu experiencia al siguiente nivel.</p>
+                <a href="../visualizacion_productos/index.html">Ver Productos</a>
+            </div>
+            <div class="imagen-imagen">
+                <img src="https://images.squarespace-cdn.com/content/v1/632df2ac8f31823ba026711b/76875a5d-5a64-4075-9517-7b33be4e9b99/Store1.jpg">
+            </div>
+        </div>
+
+        <section class="products-section">
+            <h3 style="text-align: center; margin-bottom: 20px;">Productos Destacados</h3>
+
+            <div id="product-list" class="grid-container"></div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 LEVEL-UP GAMER. Todos los derechos reservados.</p>
+        <div class="newsletter">
+            <label for="email-news">Únete a nuestro Newsletter:</label>
+            <input type="email" id="email-news" placeholder="Ingresa tu correo">
+            <button class="btn-secondary">Suscribirse</button>
+        </div>
+    </footer>
+
+    <!-- modal producto agregado -->
+    <div id="modal-agregado" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #12e747;">✅ Producto agregado al carro</h3>
+                <button class="close-modal" onclick="cerrarModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <img id="modal-img" src="" alt="Producto">
+                <div class="modal-details">
+                    <h4 id="modal-nombre">Nombre del Producto</h4>
+                    <p id="modal-precio" class="modal-price">$0</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-seguir" onclick="cerrarModal()">Seguir comprando</button>
+                <a href="../carrito/carrito.html" class="btn-ir-carro">Ir al carro</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal detalle del producto -->
+    <div id="modal-detalle" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #1E90FF;">ℹ️ Detalle del Producto</h3>
+                <button class="close-modal" onclick="cerrarModalDetalle()">✕</button>
+            </div>
+            <div class="modal-body" style="flex-direction: column; align-items: flex-start;">
+                <img id="modal-detalle-img" src="" alt="Producto" style="width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; background: #fff; border-radius: 5px; padding: 10px;">
+                <h4 id="modal-detalle-nombre" style="color: #1E90FF; font-size: 1.3rem; margin-bottom: 5px;"></h4>
+                <p id="modal-detalle-categoria" style="color: #aaa; font-size: 0.9rem; margin-bottom: 12px;"></p>
+                <p id="modal-detalle-descripcion" style="line-height: 1.5; color: #ddd; margin-bottom: 15px;"></p>
+                <p id="modal-detalle-precio" class="modal-price" style="margin-top: 0;">$0</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-seguir" onclick="cerrarModalDetalle()">Cerrar</button>
+                <button id="modal-detalle-btn-agregar" class="btn-ir-carro" style="border: none; cursor: pointer;">Añadir al Carrito</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="Script.js"></script>
+</body>
+</html>
