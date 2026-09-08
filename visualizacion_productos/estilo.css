@@ -386,6 +386,9 @@ footer {
     line-height: 1.4;
     margin-bottom: 8px;
     color: #ddd;
+    
+    overflow-wrap: break-word; 
+    word-break: break-word;
 }
 
 .review-date {
