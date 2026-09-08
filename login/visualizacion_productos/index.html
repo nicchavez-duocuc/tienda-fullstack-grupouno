@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL-UP GAMER | Home</title>
+    <link rel="stylesheet" href="estilo.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container" style="display: flex; align-items: center; gap: 20px;">
+            <h1 style="margin: 0;">LEVEL-UP GAMER</h1>
+            
+            <button onclick="abrirModalImagen()" style="margin: 0; background-color: transparent; border: 2px solid #39FF14; color: #39FF14; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#39FF14'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#39FF14';">
+                🗺️ Ver Mapa
+            </button>
+            
+            <a href="../blogs/blog.html" style="margin: 0; text-decoration: none; background-color: transparent; border: 2px solid #39FF14; color: #39FF14; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#39FF14'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#39FF14';">
+                📰 Blog
+            </a>
+        </div>
+        <a href="../carrito/carrito.html" class="btn-primary" style="background-color: #39FF14; color: black; font-weight: bold;">Ver Carrito 🛒</a>
+        <a href="../perfil/perfil.html" class="user-profile-widget" id="profile-link" title="Ir a mi perfil">
+                <img id="header-avatar" src="https://ui-avatars.com/api/?name=Gamer&background=1E90FF&color=fff" alt="Perfil">
+                <span id="header-apodo">Gamer</span>
+        </a>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h2>Bienvenido a la mejor tienda Gamer de Chile</h2>
+            <p>Encuentra consolas, accesorios, computadores y sillas especializadas.</p>
+        </section>
+
+        <section class="products-section">
+            <h3 style="text-align: center; margin-bottom: 20px;">Productos Destacados</h3>
+
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input 
+                    type="text" 
+                    id="input-buscador" 
+                    class="search-input" 
+                    placeholder="Buscar producto por nombre..."
+                    oninput="filtrarPorTexto(this.value)"
+                >
+            </div>
+
+            <div class="category-filters">
+                <button class="filter-btn active" onclick="filtrarProductos('Todos', this)">Todos</button>
+                <button class="filter-btn" onclick="filtrarProductos('Consolas', this)">Consolas</button>
+                <button class="filter-btn" onclick="filtrarProductos('Computadores Gamers', this)">Computadores Gamers</button>
+                <button class="filter-btn" onclick="filtrarProductos('Accesorios', this)">Accesorios</button>
+                <button class="filter-btn" onclick="filtrarProductos('Sillas Gamers', this)">Sillas Gamers</button>
+                <button class="filter-btn" onclick="filtrarProductos('Pantallas', this)">Pantallas</button>
+                <button class="filter-btn" onclick="filtrarProductos('Mouse', this)">Mouse</button>
+                <button class="filter-btn" onclick="filtrarProductos('Mousepad', this)">Mousepad</button>
+                <button class="filter-btn" onclick="filtrarProductos('Juegos de Mesa', this)">Juegos de Mesa</button>
+                <button class="filter-btn" onclick="filtrarProductos('Poleras Personalizadas', this)">Poleras Personalizadas</button>
+                <button class="filter-btn" onclick="filtrarProductos('Polerones Gamers Personalizados', this)">Polerones Gamers Personalizados</button>
+            </div>
+
+            <div id="product-list" class="grid-container"></div>
+        </section>
+    </main>
+    <!-- seccion de reseñas y calificaciones -->
+        <section class="reviews-section">
+            <h3 style="text-align: center; color: #39FF14; margin-bottom: 25px;">💬 Reseñas y Calificaciones</h3>
+
+            <!-- formulario para dejar reseña -->
+            <div class="review-form-container">
+                <h4 style="color: #1E90FF; margin-bottom: 15px;">Deja tu opinión sobre un producto</h4>
+                <form id="form-resena" onsubmit="guardarResena(event)">
+                    <div class="form-group">
+                        <label for="resena-producto">Producto:</label>
+                        <select id="resena-producto" required>
+                            <option value="">Selecciona un producto...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="resena-nombre">Tu Nombre / Apodo:</label>
+                        <input type="text" id="resena-nombre" placeholder="Ej: GamerPRO" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="resena-puntuacion">Calificación:</label>
+                        <select id="resena-puntuacion" required>
+                            <option value="5">⭐⭐⭐⭐⭐ (5/5 - Excelente)</option>
+                            <option value="4">⭐⭐⭐⭐☆ (4/5 - Muy bueno)</option>
+                            <option value="3">⭐⭐⭐☆☆ (3/5 - Regular)</option>
+                            <option value="2">⭐⭐☆☆☆ (2/5 - Mala)</option>
+                            <option value="1">⭐☆☆☆☆ (1/5 - Muy mala)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="resena-comentario">Comentario:</label>
+                        <textarea id="resena-comentario" rows="3" placeholder="¿Qué te pareció el producto que compraste?" required></textarea>
+                    </div>
+
+                    <button type="submit" style="background-color: #39FF14; color: black; font-weight: bold; width: 100%; border: none; padding: 12px; cursor: pointer; border-radius: 5px; font-size: 1rem; margin-top: 10px;">Publicar Reseña</button>
+                </form>
+            </div>
+
+            <!-- lista de reseñas publicadas -->
+            <div class="reviews-list-container" style="margin-top: 30px;">
+                <h4 style="color: #1E90FF; margin-bottom: 15px;">Opiniones de la Comunidad</h4>
+                <div id="lista-resenas" class="reviews-grid">
+                    <!-- se cargan dinamicamente con JavaScript -->
+                </div>
+            </div>
+        </section>
+
+    <footer>
+        <p>&copy; 2024 LEVEL-UP GAMER. Todos los derechos reservados.</p>
+        
+        <!-- contacto de mi whatsApp porque nesecitabamos uno XD -->
+        <div style="margin: 20px 0;">
+            <a href="https://wa.me/56944487210" target="_blank" style="color: #39FF14; text-decoration: none; font-size: 1.2rem; font-weight: bold; transition: color 0.3s;">
+                🟢 Contáctanos por WhatsApp: +56 9 4448 7210
+            </a>
+        </div>
+
+        <div class="newsletter">
+            <label for="email-news">Únete a nuestro Newsletter:</label>
+            <input type="email" id="email-news" placeholder="Ingresa tu correo">
+            <button class="btn-secondary">Suscribirse</button>
+        </div>
+    </footer>
+
+    <!-- modal producto agregado -->
+    <div id="modal-agregado" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #39FF14;">✅ Producto agregado al carro</h3>
+                <button class="close-modal" onclick="cerrarModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <img id="modal-img" src="" alt="Producto">
+                <div class="modal-details">
+                    <h4 id="modal-nombre">Nombre del Producto</h4>
+                    <p id="modal-precio" class="modal-price">$0</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-seguir" onclick="cerrarModal()">Seguir comprando</button>
+                <a href="../carrito/carrito.html" class="btn-ir-carro">Ir al carro</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal detalle del producto -->
+    <div id="modal-detalle" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="color: #1E90FF;">ℹ️ Detalle del Producto</h3>
+                <button class="close-modal" onclick="cerrarModalDetalle()">✕</button>
+            </div>
+            <div class="modal-body" style="flex-direction: column; align-items: flex-start;">
+                <img id="modal-detalle-img" src="" alt="Producto" style="width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; background: #fff; border-radius: 5px; padding: 10px;">
+                <h4 id="modal-detalle-nombre" style="color: #1E90FF; font-size: 1.3rem; margin-bottom: 5px;"></h4>
+                <p id="modal-detalle-categoria" style="color: #aaa; font-size: 0.9rem; margin-bottom: 12px;"></p>
+                <p id="modal-detalle-descripcion" style="line-height: 1.5; color: #ddd; margin-bottom: 15px;"></p>
+                <p id="modal-detalle-precio" class="modal-price" style="margin-top: 0;">$0</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-seguir" onclick="cerrarModalDetalle()">Cerrar</button>
+                <button id="modal-detalle-btn-agregar" class="btn-ir-carro" style="border: none; cursor: pointer;">Añadir al Carrito</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- modal de imagen del mapa -->
+    <div id="modal-imagen-extra" class="modal-overlay">
+        <div class="modal-content" style="text-align: center; position: relative; padding: 30px 20px 20px; max-width: 600px;">
+            <!-- Botón de cierre X -->
+            <button class="close-modal" onclick="cerrarModalImagen()" style="position: absolute; top: 10px; right: 15px; font-size: 28px;">✕</button>
+            
+            <h3 style="color: #39FF14; margin-bottom: 15px;">Promo Exclusiva</h3>
+            <!-- Imagen a mostrar -->
+            <img src="mapa_Level-UP.jpg" alt="Imagen Especial" style="width: 100%; border-radius: 8px; border: 1px solid #333;">
+        </div>
+    </div>
+
+    <script src="Script.js"></script>
+    <script src="../Login/usuarios.js"></script>
+</body>
+</html>
