@@ -7,12 +7,30 @@
 }
 
 body {
-    background-color: #0c0d0c;
-    color: #f9f9f9;
+    background-color: #000000;
+    color: #ffffff;
+}
+
+header {
+    background-color: #111;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #39FF14; /* Acento verde para diferenciar el carrito */
 }
 
 h1 {
-    color: #f9f9f9;
+    color: #ffffff;
+}
+
+.btn-volver {
+    background-color: #1E90FF;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
 }
 
 .cart-section {
@@ -23,7 +41,7 @@ h1 {
 
 .cart-section h2 {
     margin-bottom: 20px;
-    color: #12cee7;
+    color: #1E90FF;
 }
 
 /* Estilos de los productos listados */
@@ -88,7 +106,7 @@ h1 {
 }
 
 .btn-pagar {
-    background-color: #12e747;
+    background-color: #39FF14;
     color: black;
     border: none;
     padding: 12px 24px;
@@ -108,7 +126,7 @@ h1 {
 }
 
 .btn-qty {
-    background-color: #12cee7; /* Azul eléctrico */
+    background-color: #1E90FF; /* Azul eléctrico */
     color: white;
     border: none;
     width: 32px;
@@ -124,7 +142,7 @@ h1 {
 }
 
 .btn-qty:hover {
-    background-color: #12e747; /* Verde Neón */
+    background-color: #39FF14; /* Verde Neón */
     color: black;
 }
 

@@ -1,4 +1,4 @@
-/* Reset básico */
+
 * {
     margin: 0;
     padding: 0;
@@ -8,8 +8,17 @@
 
 /* Colores de la propuesta de diseño */
 body {
-    background-color: #0c0d0c; /* Fondo Principal */
-    color: #f9f9f9; /* Texto en blanco para contrastar */
+    background-color: #000000; /* Fondo Principal */
+    color: #ffffff; /* Texto en blanco para contrastar */
+}
+
+header {
+    background-color: #111;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #1E90FF; /* Acento Azul Eléctrico */
 }
 
 nav ul {
@@ -19,28 +28,26 @@ nav ul {
 }
 
 nav a {
-    color: #f9f9f9;
+    color: #ffffff;
     text-decoration: none;
     transition: color 0.3s;
 }
 
 nav a:hover {
-    color: #12e747; /* Acento Verde Neón */
+    color: #39FF14; /* Acento Verde Neón */
 }
 
 .hero-section {
     text-align: center;
     padding: 50px 20px;
-    background-color: #12e747;
+    background-color: #1a1a1a;
     border-bottom: 1px solid #333;
-    color: black;
-    margin-bottom: 20px;
 }
 
 .btn-primary {
     display: inline-block;
-    background-color: #12e747; /* Azul Eléctrico */
-    color: #f9f9f9;
+    background-color: #1E90FF; /* Azul Eléctrico */
+    color: #fff;
     padding: 10px 20px;
     text-decoration: none;
     margin-top: 15px;
@@ -48,7 +55,7 @@ nav a:hover {
 }
 
 .btn-primary:hover {
-    background-color: #12e747; /* Verde Neón */
+    background-color: #39FF14; /* Verde Neón */
     color: #000;
 }
 
@@ -62,7 +69,7 @@ nav a:hover {
 
 /* es para el cuadro negro que rodea los productos*/ 
 .product-card {
-    background-color: #1c1e1c;
+    background-color: #111;
     border: 1px solid #333;
     padding: 15px;
     text-align: center;
@@ -87,15 +94,15 @@ nav a:hover {
 }
 
 .product-card h4 {
-    color: #12cee7;
+    color: #1E90FF;
     margin: 10px 0;
 }
 
 footer {
     text-align: center;
     padding: 20px;
-    background-color: #1c1e1c;
-    border-top: 2px solid #12e747;
+    background-color: #111;
+    border-top: 2px solid #39FF14;
     margin-top: 40px;
 }
 
@@ -111,8 +118,8 @@ footer {
 
 .filter-btn {
     background-color: #111; /* Fondo oscuro */
-    color: #12cee7; /* Texto Azul Eléctrico */
-    border: 2px solid #12cee7;
+    color: #1E90FF; /* Texto Azul Eléctrico */
+    border: 2px solid #1E90FF;
     padding: 8px 20px;
     border-radius: 20px;
     cursor: pointer;
@@ -127,9 +134,9 @@ footer {
 
 /* Estilo para el botón de la categoría que está seleccionada actualmente */
 .filter-btn.active {
-    background-color: #12cee7;
+    background-color: #1E90FF;
     color: #fff;
-    border-color: #12cee7;
+    border-color: #1E90FF;
 }
 
 
@@ -250,7 +257,7 @@ footer {
     width: 100%;
     padding: 12px 20px 12px 45px;
     background-color: #111;
-    border: 2px solid #12cee7;
+    border: 2px solid #1E90FF;
     border-radius: 25px;
     color: #fff;
     font-size: 1rem;
@@ -379,6 +386,9 @@ footer {
     line-height: 1.4;
     margin-bottom: 8px;
     color: #ddd;
+    
+    overflow-wrap: break-word; 
+    word-break: break-word;
 }
 
 .review-date {
@@ -386,4 +396,57 @@ footer {
     text-align: right;
     color: #777;
     font-size: 0.75rem;
+}
+/* Reset básico */
+
+/* Ajuste general del header para posicionar el widget a la derecha */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+}
+
+/* Enlace contenedor del Perfil */
+.user-profile-widget {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.user-profile-widget:hover {
+    transform: scale(1.05);
+}
+
+/* Foto circular del avatar */
+#header-avatar {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #1E90FF;
+    box-shadow: 0 0 12px rgba(30, 144, 255, 0.6);
+    transition: all 0.3s ease;
+}
+
+.user-profile-widget:hover #header-avatar {
+    border-color: #39FF14;
+    box-shadow: 0 0 18px rgba(57, 255, 20, 0.8);
+}
+
+/* Texto del apodo debajo de la foto */
+#header-apodo {
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 5px;
+    text-shadow: 0 0 5px rgba(30, 144, 255, 0.8);
+    letter-spacing: 1px;
+}
+
+.user-profile-widget:hover #header-apodo {
+    color: #39FF14;
 }

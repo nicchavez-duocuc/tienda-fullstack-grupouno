@@ -154,7 +154,7 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     padding: 15px;
     border: none;
     border-radius: 30px;
-    background: #12e747;
+    background: linear-gradient(90deg, #1E90FF 0%, #39FF14 100%);
     color: #000000;
     font-family: 'Orbitron', sans-serif;
     font-weight: 700;

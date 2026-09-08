@@ -4,7 +4,7 @@ const productos = [
         codigo: "P001",
         nombre: "PC Gamer ASUS ROG Strix",
         precio: 1500000,
-        categoria: "Laptops",
+        categoria: "Computadores Gamers",
         imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRQZ-I_xCubhQ7o3zaWmwLephno1PbJ5BxOYXIaUhGfJA&s=10", 
         stock: 10,
         descripcion: "Computador de escritorio de alto rendimiento equipado con procesador de última generación y tarjeta gráfica dedicada. Diseñado para ejecutar juegos AAA en máxima resolución y transmitir en directo sin interrupciones."
@@ -56,9 +56,9 @@ const productos = [
     },
     {
         codigo: "P007",
-        nombre: "Notebook Acer Nitro 5",
+        nombre: "Notebook Gamer Acer Nitro 5",
         precio: 899990,
-        categoria: "Laptops",
+        categoria: "Computadores Gamers",
         imagen: "https://cl-dam-resizer.ecomm.cencosud.com/unsafe/adaptive-fit-in/3840x0/filters:quality(75)/paris/387183999/variant/images/8359e15d-c279-4ef3-a7b4-9369b1f9c091/387183999-0000-001.jpg",
         stock: 12,
         descripcion: "Laptop gamer portátil potente con sistema de refrigeración de doble ventilador. Pantalla de alta tasa de refresco y teclado retroiluminado, ideal para llevar tu estación de juego a donde quieras."
@@ -140,7 +140,7 @@ const productos = [
         nombre: "Mouse Gamer Hp G100 Iluminacion Led Azul Color Negro",
         precio: 12350,
         categoria: "Mouse",
-        imagen: "https://www.atcsjo.com/public/uploads/all/kCcNGk6vIi486Cn758QBywNbE16qxpKmNND8aOeS.jpg",
+        imagen: "https://http2.mlstatic.com/D_NQ_NP_894622-MLA106036056946_022026-O.webp",
         stock: 25,
         descripcion: "Mouse de diseño ambidiestro con sensor óptico de DPI ajustable rápidamente (800 / 1200 / 2000 DPI). Incluye iluminación LED fija en tono azul neón."
     },
@@ -167,7 +167,7 @@ const productos = [
         nombre: "Polera Personalizada Diseño Cartoon",
         precio: 10990,
         categoria: "Poleras Personalizadas",
-        imagen: "https://stamparetostores.gr/wp-content/uploads/2024/01/MICKEY-MINNIE.jpg",
+        imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_735652-MLC93437368874_092025-F-polera-personalizada-diseno-cartoon-amor-estampado-pareja.webp",
         stock: 13,
         descripcion: "Polera con estampado artístico de temática anime / cartoon gamer. Tela suave y fresca, confeccionada con materiales de alta calidad."
     },
@@ -176,7 +176,7 @@ const productos = [
         nombre: "Poleron Cyberpunk 2077 Gamer Futurista Ps4",
         precio: 30900,
         categoria: "Polerones Gamers Personalizados",
-        imagen: "https://www.dyenamik.com/cdn/shop/files/Cyberpunk207745.webp?v=1751018744&width=2000",
+        imagen: "https://http2.mlstatic.com/D_NQ_NP_2X_858072-MLC74429085870_022024-F-poleron-cyberpunk-2077-gamer-futurista-ps4-cdprojektred.webp",
         stock: 17,
         descripcion: "Polerón afelpado con gorro e inspiraciones estéticas futuristas de Cyberpunk 2077. Costuras reforzadas, ideal para mantenerse abrigado con un estilo gamer moderno."
     },
@@ -202,6 +202,8 @@ function renderizarProductos() {
 
     productList.innerHTML = '';
 
+    const esDuoc = esUsuarioDuoc();
+
     // Filtrar arreglo según la categoría y el texto buscado
     const productosFiltrados = productos.filter(producto => {
         const coincideCategoria = (categoriaSeleccionada === 'Todos' || producto.categoria === categoriaSeleccionada);
@@ -223,15 +225,32 @@ function renderizarProductos() {
     productosFiltrados.forEach(producto => {
         const card = document.createElement('div');
         card.className = 'product-card';
-        
+
+        // Lógica para alternar el formato del precio si es usuario Duoc
+        let HTMLPrecio = `
+            <p style="font-weight: bold; color: #1E90FF; font-size: 1.1rem; margin-top: 5px;">
+                $${producto.precio.toLocaleString('es-CL')}
+            </p>
+        `;
+
+        if (esDuoc) {
+            const precioDescuento = Math.round(producto.precio * 0.80);
+            HTMLPrecio = `
+                <p style="text-decoration: line-through; color: #aaa; font-size: 0.9rem; margin-top: 5px; margin-bottom: 0;">
+                    $${producto.precio.toLocaleString('es-CL')}
+                </p>
+                <p style="font-weight: bold; color: #39FF14; font-size: 1.1rem; margin-top: 2px;">
+                    $${precioDescuento.toLocaleString('es-CL')} <span style="font-size: 0.8rem; color: #39FF14;">(20% OFF)</span>
+                </p>
+            `;
+        }
+
         card.innerHTML = `
             <img src="${producto.imagen}" alt="${producto.nombre}" onclick="verDetalle('${producto.codigo}')" style="cursor: pointer;" title="Haz clic para ver la descripción">
             <h4>${producto.nombre}</h4>
             <p>Categoría: ${producto.categoria}</p>
-            <p style="font-weight: bold; color: #12cee7; font-size: 1.1rem; margin-top: 5px;">
-                $${producto.precio.toLocaleString('es-CL')}
-            </p>
-            <button onclick="agregarAlCarrito('${producto.codigo}')" style="background-color: #12e747; color: black; border: none; padding: 10px; cursor: pointer; margin-top:10px; width:100%; border-radius:5px; font-weight:bold;">Añadir al Carrito</button>
+            ${HTMLPrecio}
+            <button onclick="agregarAlCarrito('${producto.codigo}')" style="background-color: #39FF14; color: black; border: none; padding: 10px; cursor: pointer; margin-top:10px; width:100%; border-radius:5px; font-weight:bold;">Añadir al Carrito</button>
         `;
         
         productList.appendChild(card);
@@ -286,7 +305,20 @@ function verDetalle(codigo) {
     document.getElementById('modal-detalle-nombre').innerText = producto.nombre;
     document.getElementById('modal-detalle-categoria').innerText = "Categoría: " + producto.categoria;
     document.getElementById('modal-detalle-descripcion').innerText = producto.descripcion || "Sin descripción disponible por el momento.";
-    document.getElementById('modal-detalle-precio').innerText = "$" + producto.precio.toLocaleString('es-CL');
+
+    const elPrecio = document.getElementById('modal-detalle-precio');
+    if (elPrecio) {
+        if (esUsuarioDuoc()) {
+            const precioDescuento = Math.round(producto.precio * 0.80);
+            elPrecio.innerHTML = `
+                <span style="text-decoration: line-through; color: #aaa; font-size: 0.9rem;">$${producto.precio.toLocaleString('es-CL')}</span>
+                <span style="color: #39FF14; font-weight: bold; font-size: 1.2rem; margin-left: 8px;">$${precioDescuento.toLocaleString('es-CL')} (20% OFF)</span>
+            `;
+        } else {
+            elPrecio.innerText = "$" + producto.precio.toLocaleString('es-CL');
+        }
+    }
+
     
     const btnAgregar = document.getElementById('modal-detalle-btn-agregar');
     btnAgregar.onclick = () => {
@@ -301,12 +333,33 @@ function cerrarModalDetalle() {
     document.getElementById('modal-detalle').style.display = 'none';
 }
 
+function esUsuarioDuoc() {
+    // 1. Revisar si hay sesión activa en usuarioActivo
+    const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo'));
+    if (usuarioActivo && usuarioActivo.correo) {
+        return usuarioActivo.correo.toLowerCase().endsWith('@duocuc.cl');
+    }
+
+    // 2. Si no hay sesión activa, revisar la lista general UsuariosGamer
+    const usuariosGuardados = JSON.parse(localStorage.getItem('UsuariosGamer')) || [];
+    if (usuariosGuardados.length > 0) {
+        const ultimo = usuariosGuardados[usuariosGuardados.length - 1];
+        return ultimo.correo && ultimo.correo.toLowerCase().endsWith('@duocuc.cl');
+    }
+
+    return false;
+}
+
 // Función para agregar al carrito guardando en localStorage
 function agregarAlCarrito(codigo) {
     const producto = productos.find(p => p.codigo === codigo);
     if (!producto) return;
 
     let carrito = JSON.parse(localStorage.getItem('carritoGamer')) || [];
+    let precioCalculado = producto.precio;
+    if (esUsuarioDuoc()) {
+        precioCalculado = Math.round(producto.precio * 0.80);
+    }
 
     const index = carrito.findIndex(p => p.codigo === codigo);
     if (index !== -1) {
@@ -316,15 +369,17 @@ function agregarAlCarrito(codigo) {
         carrito.push(productoAlCarrito);
     }
 
-    mostrarModalAgregado(producto);
+    mostrarModalAgregado(producto , precioCalculado);
     localStorage.setItem('carritoGamer', JSON.stringify(carrito));
 }
 
 // Muestra el modal de confirmación cuando se agrega al carro
-function mostrarModalAgregado(producto) {
+function mostrarModalAgregado(producto , precioCalculado) {
     document.getElementById('modal-nombre').innerText = producto.nombre;
     document.getElementById('modal-img').src = producto.imagen;
-    document.getElementById('modal-precio').innerText = "$" + producto.precio.toLocaleString('es-CL');
+
+    const precioAMostrar = precioCalculado !== undefined ? precioCalculado : producto.precio;
+    document.getElementById('modal-precio').innerText = "$" + precioAMostrar.toLocaleString('es-CL');
     
     document.getElementById('modal-agregado').style.display = 'flex';
 }
@@ -428,3 +483,27 @@ document.addEventListener('DOMContentLoaded', () => {
     cargarOpcionesProductosResena();
     renderizarResenas();
 });
+
+
+
+
+
+
+// Función para mostrar el mapa
+function abrirModalImagen() {
+    const modal = document.getElementById('modal-imagen-extra');
+    if (modal) {
+        modal.style.display = 'flex';
+    }
+}
+
+// Función para ocultar la imagen al presionar la X
+function cerrarModalImagen() {
+    const modal = document.getElementById('modal-imagen-extra');
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+
+

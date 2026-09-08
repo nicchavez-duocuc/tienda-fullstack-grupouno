@@ -1,3 +1,4 @@
+/* Reset básico */
 * {
     margin: 0;
     padding: 0;
@@ -5,67 +6,79 @@
     font-family: Arial, sans-serif;
 }
 
+/* Fondo principal oscuro */
 body {
-    background-color: #b1adad;
+    background-color: #000000;
+    color: #ffffff;
 }
 
 .tituloblogs {
-  display: flex;
-  justify-content: center; /* Centers horizontally */
-  align-items: center;     /* Centers vertically */
-  margin: 20px;
-  color: #242222;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px 20px 20px;
+    color: #1E90FF; /* Azul Eléctrico */
+    font-size: 2.5rem;
 }
 
+/* Contenedor de lectura principal */
 .articulocompleto {
-    background-color: #242222;
+    background-color: #111;
+    border: 1px solid #333;
     width: 1400px;
-    margin: 20px;
+    max-width: 95%; /* Para evitar desbordes en pantallas pequeñas */
+    margin: 20px auto;
     display: flex;
-    align-items: center;
-    padding: 40px;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 12px;
+    flex-direction: column;
+    padding: 50px 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
 .articulo-texto {
-    width: 1200px;
-    padding-right: 35px;
-    color: #f3eeee;
-    margin-left: auto;
-    margin-right: auto;
+    width: 100%;
+    max-width: 1000px;
+    color: #ddd;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
 .articulo-texto h1 {
-    padding-bottom: 20px;
+    padding-bottom: 30px;
     font-size: 40px;
-    display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center;
-    margin-left: auto;
-    margin-right: auto;
+    text-align: center;
+    color: #39FF14; /* Verde Neón */
 }
 
-.articulo-texto a {
-    text-decoration: none;
-    display: inline-block;
-    margin: 40px 0px 20px 50px;
-    background-color: #12e747;
-    color: black;
-    padding: 20px 80px 20px 80px;
-    border-radius: 12px;
-}
-
+/* Imagen centrada con estilo */
 .articulo-texto img {
     width: 600px;
-    display: flex;
-    justify-content: center; /* Centers horizontally */
-    align-items: center;
-    margin-left: auto;
-    margin-right: auto;
+    max-width: 100%;
+    display: block;
+    margin: 30px auto;
+    border-radius: 8px;
+    border: 1px solid #333;
 }
 
 .articulo-texto p {
-    margin: 15px 0px 20px 0px;
+    margin: 20px 0px;
+    font-size: 1.1rem;
+}
+
+/* Botón adaptado */
+.articulo-texto a {
+    text-decoration: none;
+    display: table;
+    margin: 40px auto 10px auto;
+    background-color: #1E90FF;
+    color: #fff;
+    padding: 15px 40px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.articulo-texto a:hover {
+    background-color: #39FF14;
+    color: #000;
 }
