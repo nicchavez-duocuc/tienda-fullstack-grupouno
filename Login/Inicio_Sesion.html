@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Inicio Sesion - Comunidad Gamer</title>
+    <link rel="stylesheet" href="./estilos_login.css">
+
+</head>
+
+<body>
+    <header>Bienvenido a la comunidad Gamer</header>
+
+    <main>
+        <section class="login-container">
+
+            <h2>Inicio Sesion</h2>
+
+            <!--
+                Antes acá iba <form id="login-form">...</form>. Ahora lo dibuja
+                React: src/LoginForm.jsx se monta dentro de este div.
+            -->
+            <div id="react-login-root"></div>
+
+            <div class="register-link">
+                <a href="registrar.html" id="link-crear-cuenta">Crear Cuenta &rarr;</a>
+            </div>
+        </section>
+    </main>
+    <script type="module" src="./src/mainLogin.jsx"></script>
+</body>
+</html>

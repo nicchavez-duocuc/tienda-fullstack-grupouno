@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crear Cuenta - Comunidad Gamer</title>
+    <link rel="stylesheet" href="estilos_registro.css">
+
+</head>
+
+<body>
+    <header>
+        <h1>Bienvenido a la Comunidad Gamer</h1>
+
+    </header>
+    <main>
+        <section class="register-container">
+            <span class="subtitle">Registro Completo</span>
+            <h2>Crear Cuenta</h2>
+
+            <!--
+                Antes acá iba <form id="register-form">...</form>. Ahora lo dibuja
+                React: src/RegisterForm.jsx se monta dentro de este div.
+            -->
+            <div id="react-register-root"></div>
+
+            <div class="login-link">
+                <a href="Inicio_Sesion.html" id="link-login">&larr; Volver al Inicio Sesion</a>
+            </div>
+        </section>
+    </main>
+    <script type="module" src="src/mainRegister.jsx"></script>
+</body>
+</html>
