@@ -1,23 +1,11 @@
-/* Reset básico */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-/* Fondo principal oscuro */
-body {
-    background-color: #000000;
-    color: #ffffff;
-}
+/* Estilos específicos del Artículo Completo */
 
 .tituloblogs {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 40px 20px 20px;
-    color: #1E90FF; /* Azul Eléctrico */
+    color: #1E90FF; 
     font-size: 2.5rem;
 }
 
@@ -26,7 +14,7 @@ body {
     background-color: #111;
     border: 1px solid #333;
     width: 1400px;
-    max-width: 95%; /* Para evitar desbordes en pantallas pequeñas */
+    max-width: 95%; 
     margin: 20px auto;
     display: flex;
     flex-direction: column;
@@ -47,7 +35,7 @@ body {
     padding-bottom: 30px;
     font-size: 40px;
     text-align: center;
-    color: #39FF14; /* Verde Neón */
+    color: #39FF14; 
 }
 
 /* Imagen centrada con estilo */

@@ -1,62 +1,10 @@
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, sans-serif;
-}
-
-/* Colores de la propuesta de diseño */
-body {
-    background-color: #000000; /* Fondo Principal */
-    color: #ffffff; /* Texto en blanco para contrastar */
-}
-
-header {
-    background-color: #111;
-    padding: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 2px solid #1E90FF; /* Acento Azul Eléctrico */
-}
-
-nav ul {
-    list-style: none;
-    display: flex;
-    gap: 15px;
-}
-
-nav a {
-    color: #ffffff;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-nav a:hover {
-    color: #39FF14; /* Acento Verde Neón */
-}
+/* Estilos específicos de la Tienda Principal */
 
 .hero-section {
     text-align: center;
     padding: 50px 20px;
     background-color: #1a1a1a;
     border-bottom: 1px solid #333;
-}
-
-.btn-primary {
-    display: inline-block;
-    background-color: #1E90FF; /* Azul Eléctrico */
-    color: #fff;
-    padding: 10px 20px;
-    text-decoration: none;
-    margin-top: 15px;
-    border-radius: 5px;
-}
-
-.btn-primary:hover {
-    background-color: #39FF14; /* Verde Neón */
-    color: #000;
 }
 
 /* Grilla de productos */
@@ -67,7 +15,7 @@ nav a:hover {
     padding: 20px;
 }
 
-/* es para el cuadro negro que rodea los productos*/ 
+/* Cuadro negro que rodea los productos */ 
 .product-card {
     background-color: #111;
     border: 1px solid #333;
@@ -83,27 +31,18 @@ nav a:hover {
     background-color: #ffffff; 
     border-radius: 5px; 
     padding: 10px; 
-    
-    /*Define que cualquier cambio en la imagen tome 0.3 segundos y sea suave */
     transition: transform 0.3s ease; 
+    cursor: pointer;
 }
 
-/*Efecto al pasar el mouse sobre la tarjeta a peticion del profe david*/
+/* Efecto al pasar el mouse sobre la tarjeta */
 .product-card:hover img {
-    transform: scale(1.08); /* Agranda la imagen un 8% */
+    transform: scale(1.08); 
 }
 
 .product-card h4 {
     color: #1E90FF;
     margin: 10px 0;
-}
-
-footer {
-    text-align: center;
-    padding: 20px;
-    background-color: #111;
-    border-top: 2px solid #39FF14;
-    margin-top: 40px;
 }
 
 /* Filtros de categorías */
@@ -112,13 +51,13 @@ footer {
     justify-content: center;
     gap: 15px;
     margin-bottom: 30px;
-    flex-wrap: wrap; /* Permite que los botones bajen de línea en celulares */
+    flex-wrap: wrap; 
     padding: 0 20px;
 }
 
 .filter-btn {
-    background-color: #111; /* Fondo oscuro */
-    color: #1E90FF; /* Texto Azul Eléctrico */
+    background-color: #111; 
+    color: #1E90FF; 
     border: 2px solid #1E90FF;
     padding: 8px 20px;
     border-radius: 20px;
@@ -129,26 +68,21 @@ footer {
 
 .filter-btn:hover {
     background-color: #1a1a1a;
-    box-shadow: 0 0 10px #1E90FF; /* Brillo sutil al pasar el mouse */
+    box-shadow: 0 0 10px #1E90FF; 
 }
 
-/* Estilo para el botón de la categoría que está seleccionada actualmente */
 .filter-btn.active {
     background-color: #1E90FF;
     color: #fff;
     border-color: #1E90FF;
 }
 
-
-/*----------------------------------------------------------------------------------------------*/
-
-
-/* Estilos para el Modal de Producto Agregado */
+/* Modal de Producto Agregado */
 .modal-overlay {
-    display: none; /* Oculto por defecto */
+    display: none; 
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.7); /* Fondo oscuro semitransparente */
+    background-color: rgba(0, 0, 0, 0.7); 
     z-index: 1000;
     justify-content: center;
     align-items: center;
@@ -236,16 +170,7 @@ footer {
     display: inline-block;
 }
 
-
-
-
-
-
-
-
-
-
-/* Estilos para el Buscador Gamer */
+/* Buscador Gamer */
 .search-container {
     max-width: 500px;
     margin: 0 auto 25px auto;
@@ -283,7 +208,7 @@ footer {
     pointer-events: none;
 }
 
-/* Mensaje cuando no hay resultados */
+/* Mensaje sin resultados */
 .no-results {
     grid-column: 1 / -1;
     text-align: center;
@@ -294,19 +219,6 @@ footer {
     border: 1px dashed #333;
     border-radius: 8px;
 }
-
-/* Indica que la imagen de la tarjeta es clickeable */
-.product-card img {
-    cursor: pointer;
-}
-
-
-
-
-
-
-
-
 
 /* --- ESTILOS DE RESEÑAS --- */
 .reviews-section {
@@ -386,7 +298,6 @@ footer {
     line-height: 1.4;
     margin-bottom: 8px;
     color: #ddd;
-    
     overflow-wrap: break-word; 
     word-break: break-word;
 }
@@ -396,57 +307,4 @@ footer {
     text-align: right;
     color: #777;
     font-size: 0.75rem;
-}
-/* Reset básico */
-
-/* Ajuste general del header para posicionar el widget a la derecha */
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 30px;
-}
-
-/* Enlace contenedor del Perfil */
-.user-profile-widget {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    transition: transform 0.2s ease;
-}
-
-.user-profile-widget:hover {
-    transform: scale(1.05);
-}
-
-/* Foto circular del avatar */
-#header-avatar {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #1E90FF;
-    box-shadow: 0 0 12px rgba(30, 144, 255, 0.6);
-    transition: all 0.3s ease;
-}
-
-.user-profile-widget:hover #header-avatar {
-    border-color: #39FF14;
-    box-shadow: 0 0 18px rgba(57, 255, 20, 0.8);
-}
-
-/* Texto del apodo debajo de la foto */
-#header-apodo {
-    color: #ffffff;
-    font-family: 'Orbitron', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 700;
-    margin-top: 5px;
-    text-shadow: 0 0 5px rgba(30, 144, 255, 0.8);
-    letter-spacing: 1px;
-}
-
-.user-profile-widget:hover #header-apodo {
-    color: #39FF14;
 }
