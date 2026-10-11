@@ -1,18 +1,17 @@
 // main.jsx
 // Punto de entrada de React para esta página. Busca el div
-// #react-productos-root que dejamos en index.html y monta ahí el
-// componente ProductGrid.
+// #react-productos-root que está en index.html y monta ahí TiendaPage.
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import ProductGrid from "./ProductGrid.jsx";
+import TiendaPage from "./pages/TiendaPage.jsx";
 
 const contenedor = document.getElementById("react-productos-root");
 
 if (contenedor) {
     ReactDOM.createRoot(contenedor).render(
         <React.StrictMode>
-            <ProductGrid />
+            <TiendaPage />
         </React.StrictMode>
     );
 } else {

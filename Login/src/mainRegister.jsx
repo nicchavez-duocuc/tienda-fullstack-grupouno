@@ -1,14 +1,16 @@
+// mainRegister.jsx
+// Busca #react-register-root en registrar.html y monta ahí RegistroPage.
 
 import React from "react";
 import ReactDOM from "react-dom/client";
-import RegisterForm from "./RegisterForm.jsx";
+import RegistroPage from "./pages/RegistroPage.jsx";
 
 const contenedor = document.getElementById("react-register-root");
 
 if (contenedor) {
     ReactDOM.createRoot(contenedor).render(
         <React.StrictMode>
-            <RegisterForm />
+            <RegistroPage />
         </React.StrictMode>
     );
 } else {
