@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión e Historial de Compras - Usuarios Gamer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #121212;
+            color: #e0e0e0;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+        h2, h3 { color: #1E90FF; }
+        .grid {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .column {
+            flex: 1;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            background: #2d2d2d;
+            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #1E90FF;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover { background: #1c7ed6; }
+        button.danger { background: #e03131; }
+        button.danger:hover { background: #c92a2a; }
+        .user-card {
+            background: #252525;
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            margin-bottom: 20px;
+        }
+        img.avatar-preview {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .history-container {
+            max-height: 280px;
+            overflow-y: auto;
+            background: #1a1a1a;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            border: 1px solid #333;
+        }
+        .purchase-box {
+            background: #222;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+        .purchase-header {
+            display: flex;
+            justify-content: space-between;
+            color: #39FF14;
+            font-weight: bold;
+            margin-bottom: 6px;
+            border-bottom: 1px dashed #444;
+            padding-bottom: 4px;
+        }
+        .purchase-item {
+            display: flex;
+            justify-content: space-between;
+            color: #ccc;
+            font-size: 0.85rem;
+            padding: 2px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Panel de Administración - Historial de Compras</h2>
+    
+    <div class="grid">
+        <!-- Columna Izquierda: Lista de Usuarios -->
+        <div class="column">
+            <h3>1. Seleccionar Usuario</h3>
+            <label for="lista-usuarios">Usuarios registrados:</label>
+            <select id="lista-usuarios" size="12">
+                <!-- Se llena dinámicamente -->
+            </select>
+            <button id="btn-cargar">Ver Datos e Historial</button>
+        </div>
+
+        <!-- Columna Derecha: Panel de Edición e Historial -->
+        <div class="column">
+            <h3>2. Información e Historial de Compras</h3>
+            
+            <div id="panel-edicion" class="user-card" style="display: none;">
+                <img id="ver-avatar" class="avatar-preview" src="" alt="Avatar">
+                
+                <input type="hidden" id="edit-correo-original">
+
+                <label>Correo:</label>
+                <input type="email" id="edit-correo" disabled style="background: #1a1a1a; color: #777;">
+
+                <label>Apodo / Nombre:</label>
+                <input type="text" id="edit-apodo">
+
+                <label>Nueva Contraseña (opcional):</label>
+                <input type="password" id="edit-clave" placeholder="Dejar en blanco para no cambiar">
+
+                <button id="btn-actualizar">Actualizar Perfil (Update)</button>
+                <button id="btn-eliminar" class="danger">Eliminar Usuario (Delete)</button>
+
+                <hr style="border-color: #444; margin: 15px 0;">
+
+                <h4 style="margin: 5px 0; color: #39FF14;">📦 Historial de Compras Pagadas</h4>
+                <div id="contenedor-historial" class="history-container">
+                    <span style="color: #888;">No hay compras registradas para este usuario.</span>
+                </div>
+            </div>
+
+            <p id="mensaje-seleccion" style="color: #888; margin-top: 20px;">
+                Selecciona un usuario de la lista y presiona el botón para ver su perfil y sus transacciones completadas.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const selectLista = document.getElementById('lista-usuarios');
+        const btnCargar = document.getElementById('btn-cargar');
+        const panelEdicion = document.getElementById('panel-edicion');
+        const mensajeSeleccion = document.getElementById('mensaje-seleccion');
+
+        const inputCorreoOriginal = document.getElementById('edit-correo-original');
+        const inputCorreo = document.getElementById('edit-correo');
+        const inputApodo = document.getElementById('edit-apodo');
+        const inputClave = document.getElementById('edit-clave');
+        const imgAvatar = document.getElementById('ver-avatar');
+        const contenedorHistorial = document.getElementById('contenedor-historial');
+
+        const btnActualizar = document.getElementById('btn-actualizar');
+        const btnEliminar = document.getElementById('btn-eliminar');
+
+        // Función para cargar la lista de usuarios
+        function cargarUsuariosEnSelect() {
+            selectLista.innerHTML = '';
+            const usuarios = JSON.parse(localStorage.getItem('UsuariosGamer')) || [];
+
+            if (usuarios.length === 0) {
+                const opt = document.createElement('option');
+                opt.textContent = 'No hay usuarios registrados';
+                opt.disabled = true;
+                selectLista.appendChild(opt);
+                return;
+            }
+
+            usuarios.forEach(usr => {
+                const correoUser = usr.correo || usr.email || 'sin-correo';
+                const option = document.createElement('option');
+                option.value = correoUser;
+                option.textContent = `${usr.apodo || usr.nombre || 'Gamer'} (${correoUser})`;
+                selectLista.appendChild(option);
+            });
+        }
+
+        // Inicializar
+        cargarUsuariosEnSelect();
+
+        // Cargar datos e historial del usuario seleccionado
+        btnCargar.addEventListener('click', () => {
+            const correoSeleccionado = selectLista.value;
+            if (!correoSeleccionado) {
+                alert('Por favor selecciona un usuario de la lista.');
+                return;
+            }
+
+            const usuarios = JSON.parse(localStorage.getItem('UsuariosGamer')) || [];
+            const usuario = usuarios.find(usr => (usr.correo || usr.email) === correoSeleccionado);
+
+            if (usuario) {
+                const correoUser = usuario.correo || usuario.email || '';
+                inputCorreoOriginal.value = correoUser;
+                inputCorreo.value = correoUser;
+                inputApodo.value = usuario.apodo || usuario.nombre || '';
+                inputClave.value = '';
+
+                // Avatar
+                if (usuario.avatar) {
+                    imgAvatar.src = usuario.avatar;
+                } else {
+                    const nombreAvatar = usuario.apodo || usuario.nombre || 'Gamer';
+                    imgAvatar.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(nombreAvatar)}&background=1E90FF&color=fff`;
+                }
+
+                // --- BÚSQUEDA Y LECTURA DEL HISTORIAL NORMALIZADO ---
+                const correoNormalizado = correoUser.toLowerCase().trim();
+                const claveHistorialUser = `historialGamer_${correoNormalizado}`;
+                
+                console.log("🔍 Buscando historial en la clave:", claveHistorialUser);
+                const historialUsuario = JSON.parse(localStorage.getItem(claveHistorialUser)) || [];
+                console.log("📦 Historial obtenido:", historialUsuario);
+
+                contenedorHistorial.innerHTML = '';
+                if (historialUsuario.length === 0) {
+                    contenedorHistorial.innerHTML = '<span style="color: #888;">No hay compras registradas para este usuario.</span>';
+                } else {
+                    historialUsuario.forEach((compra, index) => {
+                        const purchaseBox = document.createElement('div');
+                        purchaseBox.className = 'purchase-box';
+
+                        let htmlItems = `
+                            <div class="purchase-header">
+                                <span>Compra #${historialUsuario.length - index} (${compra.fecha || 'Fecha desconocida'})</span>
+                                <span>Total: $${Number(compra.total || 0).toLocaleString('es-CL')}</span>
+                            </div>
+                        `;
+
+                        if (compra.productos && Array.isArray(compra.productos)) {
+                            compra.productos.forEach(item => {
+                                const precioItem = item.precio || 0;
+                                const cantItem = item.cantidad || 1;
+                                htmlItems += `
+                                    <div class="purchase-item">
+                                        <span>• ${item.nombre} (x${cantItem})</span>
+                                        <span>$${(precioItem * cantItem).toLocaleString('es-CL')}</span>
+                                    </div>
+                                `;
+                            });
+                        }
+
+                        purchaseBox.innerHTML = htmlItems;
+                        contenedorHistorial.appendChild(purchaseBox);
+                    });
+                }
+
+                panelEdicion.style.display = 'block';
+                mensajeSeleccion.style.display = 'none';
+            }
+        });
+
+        // Actualizar usuario (UPDATE)
+        btnActualizar.addEventListener('click', () => {
+            const correoOriginal = inputCorreoOriginal.value;
+            const nuevoApodo = inputApodo.value.trim();
+            const nuevaClave = inputClave.value.trim();
+
+            let usuarios = JSON.parse(localStorage.getItem('UsuariosGamer')) || [];
+
+            usuarios = usuarios.map(usr => {
+                const cUser = usr.correo || usr.email;
+                if (cUser === correoOriginal) {
+                    usr.apodo = nuevoApodo;
+                    if (nuevaClave) {
+                        usr.clave = nuevaClave;
+                    }
+                }
+                return usr;
+            });
+
+            localStorage.setItem('UsuariosGamer', JSON.stringify(usuarios));
+            alert('¡Perfil actualizado con éxito!');
+            cargarUsuariosEnSelect();
+        });
+
+        // Eliminar usuario (DELETE)
+        btnEliminar.addEventListener('click', () => {
+            const correoOriginal = inputCorreoOriginal.value;
+
+            if (confirm(`¿Estás seguro de eliminar al usuario: ${correoOriginal}?`)) {
+                let usuarios = JSON.parse(localStorage.getItem('UsuariosGamer')) || [];
+                usuarios = usuarios.filter(usr => (usr.correo || usr.email) !== correoOriginal);
+
+                localStorage.setItem('UsuariosGamer', JSON.stringify(usuarios));
+                
+                // Limpiar también su carrito e historial
+                const correoNormalizado = correoOriginal.toLowerCase().trim();
+                localStorage.removeItem(`carritoGamer_${correoNormalizado}`);
+                localStorage.removeItem(`historialGamer_${correoNormalizado}`);
+
+                alert('Usuario eliminado correctamente.');
+
+                panelEdicion.style.display = 'none';
+                mensajeSeleccion.style.display = 'block';
+                cargarUsuariosEnSelect();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

@@ -1,35 +1,24 @@
-// Reemplaza TODO script_carrito.js:
-//   cargarCarrito(), eliminarDelCarrito(), aumentarCantidad(), disminuirCantidad(),
-//   vaciarCarrito(), procederPago(), y el sistema del modal
-//   (abrirModalConfirmacion, cerrarModalConfirmacion, ejecutarAccion, accionPendiente).
-// Y reemplaza en carrito.html: #cart-container, .cart-summary y #modal-confirmacion.
-// Se conservan exactamente las mismas clases CSS, así estilo_carrito.css no cambia.
-
 import { useState, useEffect } from "react";
 import {
-    CLAVE_CARRITO,
+    obtenerClaveCarrito,
     esUsuarioDuoc,
     leerCarrito,
     guardarCarrito,
-    calcularPrecios
+    calcularPrecios,
+    registrarCompraEnHistorial
 } from "./utils.js";
 
 export default function Carrito() {
-    // El carrito vive en estado de React. Se inicializa UNA vez leyendo localStorage.
     const [carrito, setCarrito] = useState(leerCarrito);
-
-    // Reemplaza a la variable global "accionPendiente" y a los innerText/style del modal:
-    // null = modal cerrado; un objeto = modal abierto con esa configuración.
     const [modal, setModal] = useState(null);
 
     const esDuoc = esUsuarioDuoc();
 
-    // Si el carrito cambia en OTRA pestaña (por ejemplo agregas algo en la tienda),
-    // el navegador dispara el evento "storage" y aquí refrescamos el estado.
-    // Sin esto, esta pestaña podría pisar con datos viejos lo que agregaste en la tienda.
+    // Sincroniza en tiempo real si el carrito cambia en otra pestaña/componente
     useEffect(() => {
         function alCambiarStorage(e) {
-            if (e.key === CLAVE_CARRITO || e.key === null) {
+            const claveActual = obtenerClaveCarrito();
+            if (e.key === claveActual || e.key === null) {
                 setCarrito(leerCarrito());
             }
         }
@@ -37,16 +26,12 @@ export default function Carrito() {
         return () => window.removeEventListener("storage", alCambiarStorage);
     }, []);
 
-    // El total NO es un estado aparte: se calcula a partir del carrito en cada render,
-    // así nunca puede quedar desincronizado (antes había que acordarse de actualizarlo).
+    // Recalcula el total acumulado
     const total = carrito.reduce((acumulado, producto) => {
         const { precioFinal } = calcularPrecios(producto, esDuoc);
-        return acumulado + precioFinal * producto.cantidad;
+        return acumulado + (precioFinal * (Number(producto.cantidad) || 1));
     }, 0);
 
-    // ---------- Acciones sobre el carrito ----------
-
-    // Actualiza la pantalla (estado) y guarda en localStorage en un solo paso
     function actualizar(nuevoCarrito) {
         setCarrito(nuevoCarrito);
         guardarCarrito(nuevoCarrito);
@@ -65,7 +50,6 @@ export default function Carrito() {
     function disminuirCantidad(codigo) {
         const producto = carrito.find((p) => p.codigo === codigo);
         if (!producto) return;
-        // Igual que antes: si queda 1 y aprietas "-", se elimina del carrito
         if (producto.cantidad > 1) {
             actualizar(
                 carrito.map((p) => (p.codigo === codigo ? { ...p, cantidad: p.cantidad - 1 } : p))
@@ -75,8 +59,7 @@ export default function Carrito() {
         }
     }
 
-    // ---------- Modal de confirmación ----------
-
+    // Modal helpers
     function abrirModal(config) {
         setModal(config);
     }
@@ -85,26 +68,15 @@ export default function Carrito() {
         setModal(null);
     }
 
-    function confirmarModal() {
-        const accion = modal ? modal.accion : null;
-        // Primero cerramos y DESPUÉS ejecutamos la acción: así, si la acción abre otro
-        // modal (el de "Pago exitoso"), ese segundo modal es el que queda visible.
-        cerrarModal();
-        if (accion) accion();
-    }
-
-    // ---------- Botones de abajo ----------
-
     function vaciarCarrito() {
         if (carrito.length === 0) {
             abrirModal({
-                mensaje: "Tu carrito ya está vacío. ¡Ve a la tienda a buscar algo genial!",
+                mensaje: "Tu carrito ya está vacío.",
                 icono: "🛒",
                 textoBoton: "Entendido",
                 colorFondo: "#1E90FF",
                 colorTexto: "white",
-                esAlerta: true,
-                accion: null
+                esAlerta: true
             });
             return;
         }
@@ -116,23 +88,19 @@ export default function Carrito() {
             colorFondo: "#ff3333",
             colorTexto: "white",
             esAlerta: false,
-            accion: () => {
-                localStorage.removeItem(CLAVE_CARRITO);
-                setCarrito([]);
-            }
+            tipoAccion: "VACIAR"
         });
     }
 
     function procederPago() {
         if (carrito.length === 0) {
             abrirModal({
-                mensaje: "No tienes productos en tu carrito. ¡Agrega algunos antes de comprar!",
+                mensaje: "No tienes productos en tu carrito para comprar.",
                 icono: "🛒",
                 textoBoton: "Entendido",
                 colorFondo: "#1E90FF",
                 colorTexto: "white",
-                esAlerta: true,
-                accion: null
+                esAlerta: true
             });
             return;
         }
@@ -144,23 +112,46 @@ export default function Carrito() {
             colorFondo: "#39FF14",
             colorTexto: "black",
             esAlerta: false,
-            accion: () => {
-                localStorage.removeItem(CLAVE_CARRITO);
-                setCarrito([]);
-                abrirModal({
-                    mensaje: "¡Pago procesado con éxito! Gracias por elegir LEVEL-UP GAMER.",
-                    icono: "✅",
-                    textoBoton: "Genial",
-                    colorFondo: "#39FF14",
-                    colorTexto: "black",
-                    esAlerta: true,
-                    accion: null
-                });
-            }
+            tipoAccion: "PAGAR"
         });
     }
 
-    // ---------- Dibujo en pantalla ----------
+    // Ejecuta la confirmación del modal garantizando el estado 'carrito' fresco y actualizado
+    function ejecutarAccionModal() {
+        if (!modal) return;
+        const tipo = modal.tipoAccion;
+        cerrarModal();
+
+        if (tipo === "VACIAR") {
+            const clave = obtenerClaveCarrito();
+            localStorage.removeItem(clave);
+            setCarrito([]);
+        } else if (tipo === "PAGAR") {
+            // 1. Guardar en el historial usando el estado fresco de carrito y total
+            const guardadoExitoso = registrarCompraEnHistorial(carrito, total);
+
+            if (guardadoExitoso) {
+                // 2. Limpiar el carrito activo solo tras confirmar guardado
+                const claveCarro = obtenerClaveCarrito();
+                localStorage.removeItem(claveCarro);
+                setCarrito([]);
+
+                // 3. Notificación de éxito
+                setTimeout(() => {
+                    abrirModal({
+                        mensaje: "¡Pago procesado con éxito! Gracias por elegir LEVEL-UP GAMER.",
+                        icono: "✅",
+                        textoBoton: "Genial",
+                        colorFondo: "#39FF14",
+                        colorTexto: "black",
+                        esAlerta: true
+                    });
+                }, 100);
+            } else {
+                alert("Ocurrió un error al procesar el pago. Por favor intenta nuevamente.");
+            }
+        }
+    }
 
     return (
         <>
@@ -243,7 +234,6 @@ export default function Carrito() {
                 </button>
             </div>
 
-            {/* El modal solo existe en pantalla cuando "modal" tiene datos */}
             {modal && (
                 <div className="modal-overlay" style={{ display: "flex" }}>
                     <div className="modal-confirm-content">
@@ -263,7 +253,7 @@ export default function Carrito() {
                                 type="button"
                                 className="btn-accion"
                                 style={{ backgroundColor: modal.colorFondo, color: modal.colorTexto }}
-                                onClick={confirmarModal}
+                                onClick={ejecutarAccionModal}
                             >
                                 {modal.textoBoton}
                             </button>

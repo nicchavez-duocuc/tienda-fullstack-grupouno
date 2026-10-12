@@ -5,6 +5,35 @@
 // vía window.productos), por eso las funciones de abajo pueden seguir
 // usando "productos" tal cual sin ningún cambio.
 
+// --- 0. GESTIÓN DE CARRITO E HISTORIAL POR USUARIO ---
+
+// Obtiene la clave única del carrito según el usuario activo o sesión de invitado
+function obtenerClaveCarrito() {
+    const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo'));
+    if (usuarioActivo && usuarioActivo.correo) {
+        return `carritoGamer_${usuarioActivo.correo.toLowerCase()}`;
+    }
+    return 'carritoGamer_invitado';
+}
+
+// Función global para leer el arreglo del carrito del usuario activo
+function obtenerCarrito() {
+    const clave = obtenerClaveCarrito();
+    return JSON.parse(localStorage.getItem(clave)) || [];
+}
+
+// Función auxiliar para obtener la lista de productos de forma segura
+function obtenerListaProductos() {
+    let lista = (typeof productos !== 'undefined') ? productos : [];
+    if (!lista || lista.length === 0) {
+        // Respaldo de seguridad leyendo de localStorage si la variable global no carga
+        lista = JSON.parse(localStorage.getItem('productosGamer')) || [];
+    }
+    return lista;
+}
+
+// --- 1. VERIFICACIÓN DE DESCUENTO INSTITUCIONAL ---
+
 function esUsuarioDuoc() {
     // 1. Revisar si hay sesión activa en usuarioActivo
     const usuarioActivo = JSON.parse(localStorage.getItem('usuarioActivo'));
@@ -22,9 +51,12 @@ function esUsuarioDuoc() {
     return false;
 }
 
+// --- 2. MODALES Y DETALLE DE PRODUCTOS ---
+
 // Muestra el Modal con los detalles y la descripción del producto al hacer clic en la imagen
 function verDetalle(codigo) {
-    const producto = productos.find(p => p.codigo === codigo);
+    const listaProductos = obtenerListaProductos();
+    const producto = listaProductos.find(p => p.codigo === codigo);
     if (!producto) return;
 
     document.getElementById('modal-detalle-img').src = producto.imagen;
@@ -58,45 +90,68 @@ function cerrarModalDetalle() {
     document.getElementById('modal-detalle').style.display = 'none';
 }
 
-// Función para agregar al carrito guardando en localStorage
-function agregarAlCarrito(codigo) {
-    const producto = productos.find(p => p.codigo === codigo);
-    if (!producto) return;
+// --- 3. LÓGICA DE AGREGAR AL CARRITO Y FINALIZAR COMPRA (CON DEPURACIÓN) ---
 
-    let carrito = JSON.parse(localStorage.getItem('carritoGamer')) || [];
+function agregarAlCarrito(codigo) {
+    console.log("Intentando agregar producto con código:", codigo); // <-- Nos dirá qué código llegó
+    
+    const listaProductos = obtenerListaProductos();
+    console.log("Lista de productos disponible:", listaProductos); // <-- Nos dirá si la lista tiene elementos
+
+    const producto = listaProductos.find(p => String(p.codigo) === String(codigo));
+    
+    if (!producto) {
+        console.error("❌ ERROR: No se encontró ningún producto con el código:", codigo);
+        alert("Error: No se encontró el producto en la base de datos.");
+        return;
+    }
+
+    // Obtener la clave personalizada según el usuario logueado
+    const claveCarrito = obtenerClaveCarrito();
+    let carrito = JSON.parse(localStorage.getItem(claveCarrito)) || [];
+
     let precioCalculado = producto.precio;
     if (esUsuarioDuoc()) {
         precioCalculado = Math.round(producto.precio * 0.80);
     }
 
-    const index = carrito.findIndex(p => p.codigo === codigo);
+    const index = carrito.findIndex(p => String(p.codigo) === String(codigo));
     if (index !== -1) {
         carrito[index].cantidad += 1;
     } else {
-        let productoAlCarrito = { ...producto, cantidad: 1 };
+        let productoAlCarrito = { 
+            ...producto, 
+            precio: precioCalculado, 
+            cantidad: 1 
+        };
         carrito.push(productoAlCarrito);
     }
 
+    // Asegurarnos de que el producto no sea undefined antes de mostrar el modal
     mostrarModalAgregado(producto, precioCalculado);
-    localStorage.setItem('carritoGamer', JSON.stringify(carrito));
+    localStorage.setItem(claveCarrito, JSON.stringify(carrito));
+    console.log("✅ Producto agregado con éxito al carrito:", claveCarrito);
 }
 
-// Muestra el modal de confirmación cuando se agrega al carro
+// Muestra el modal de confirmación con blindaje contra undefined
 function mostrarModalAgregado(producto, precioCalculado) {
-    document.getElementById('modal-nombre').innerText = producto.nombre;
-    document.getElementById('modal-img').src = producto.imagen;
+    if (!producto) return;
 
-    const precioAMostrar = precioCalculado !== undefined ? precioCalculado : producto.precio;
-    document.getElementById('modal-precio').innerText = "$" + precioAMostrar.toLocaleString('es-CL');
+    const elNombre = document.getElementById('modal-nombre');
+    const elImg = document.getElementById('modal-img');
+    const elPrecio = document.getElementById('modal-precio');
+    const elModal = document.getElementById('modal-agregado');
 
-    document.getElementById('modal-agregado').style.display = 'flex';
+    if (elNombre) elNombre.innerText = producto.nombre || "Producto";
+    if (elImg) elImg.src = producto.imagen || "";
+
+    const precioAMostrar = precioCalculado !== undefined ? precioCalculado : (producto.precio || 0);
+    if (elPrecio) elPrecio.innerText = "$" + precioAMostrar.toLocaleString('es-CL');
+
+    if (elModal) elModal.style.display = 'flex';
 }
 
-function cerrarModal() {
-    document.getElementById('modal-agregado').style.display = 'none';
-}
-
-// --- SISTEMA DE RESEÑAS Y CALIFICACIONES ---
+// --- 4. SISTEMA DE RESEÑAS Y CALIFICACIONES ---
 
 // Llena el selector de productos en el formulario
 function cargarOpcionesProductosResena() {
@@ -104,7 +159,8 @@ function cargarOpcionesProductosResena() {
     if (!selectProducto) return;
 
     selectProducto.innerHTML = '<option value="">Selecciona un producto...</option>';
-    productos.forEach(prod => {
+    const listaProductos = obtenerListaProductos();
+    listaProductos.forEach(prod => {
         const option = document.createElement('option');
         option.value = prod.nombre;
         option.textContent = prod.nombre;
@@ -176,15 +232,15 @@ function guardarResena(event) {
     renderizarResenas();
 }
 
-// Carga inicial al abrir o recargar la página
-// Ya NO llamamos renderizarProductos() aquí: eso ahora lo hace React
-// automáticamente en cuanto main.jsx monta <ProductGrid />.
+// --- 5. CARGA INICIAL DEL DOM ---
+
 document.addEventListener('DOMContentLoaded', () => {
     cargarOpcionesProductosResena();
     renderizarResenas();
 });
 
-// Función para mostrar el mapa
+// --- 6. MODAL DE IMAGEN EXTRA ---
+
 function abrirModalImagen() {
     const modal = document.getElementById('modal-imagen-extra');
     if (modal) {
@@ -192,7 +248,6 @@ function abrirModalImagen() {
     }
 }
 
-// Función para ocultar la imagen al presionar la X
 function cerrarModalImagen() {
     const modal = document.getElementById('modal-imagen-extra');
     if (modal) {
