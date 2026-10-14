@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Gestión e Historial de Compras - Usuarios Gamer</title>
+</head>
+<body>
+
+<div class="container">
+    <h2>Panel de Administración - Historial de Compras</h2>
+    
+    <div class="grid">
+        <!-- Columna Izquierda: Lista de Usuarios -->
+        <div class="column">
+            <h3>1. Seleccionar Usuario</h3>
+            <label for="lista-usuarios">Usuarios registrados:</label>
+            <select id="lista-usuarios" size="12">
+                <!-- Se llena dinámicamente -->
+            </select>
+            <button id="btn-cargar">Ver Datos e Historial</button>
+        </div>
+
+        <!-- Columna Derecha: Panel de Edición e Historial -->
+        <div class="column">
+            <h3>2. Información e Historial de Compras</h3>
+            
+            <div id="panel-edicion" class="user-card" style="display: none;">
+                <img id="ver-avatar" class="avatar-preview" src="" alt="Avatar">
+                
+                <input type="hidden" id="edit-correo-original">
+
+                <label>Correo:</label>
+                <input type="email" id="edit-correo" disabled style="background: #1a1a1a; color: #777;">
+
+                <label>Apodo / Nombre:</label>
+                <input type="text" id="edit-apodo">
+
+                <label>Nueva Contraseña (opcional):</label>
+                <input type="password" id="edit-clave" placeholder="Dejar en blanco para no cambiar">
+
+                <button id="btn-actualizar">Actualizar Perfil (Update)</button>
+                <button id="btn-eliminar" class="danger">Eliminar Usuario (Delete)</button>
+
+                <hr style="border-color: #444; margin: 15px 0;">
+
+                <h4 style="margin: 5px 0; color: #39FF14;">📦 Historial de Compras Pagadas</h4>
+                <div id="contenedor-historial" class="history-container">
+                    <span style="color: #888;">No hay compras registradas para este usuario.</span>
+                </div>
+            </div>
+
+            <p id="mensaje-seleccion" style="color: #888; margin-top: 20px;">
+                Selecciona un usuario de la lista y presiona el botón para ver su perfil y sus transacciones completadas.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
