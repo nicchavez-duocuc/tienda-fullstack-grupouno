@@ -2,15 +2,14 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { fileURLToPath } from 'node:url';
 
-// Un solo servidor de Vite sirve todas las páginas desde el mismo origen
-// (http://localhost:5173), así comparten el localStorage del carrito y de
-// usuarios entre ellas.
 export default defineConfig({
   plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './tests/setupTests.js',
+  },
   build: {
-    // Solo se usa con "npm run build": lista las páginas a compilar.
-    // Agrega aquí cualquier otra página que conviertas más adelante
-    // (por ejemplo perfil/perfil.html).
     rollupOptions: {
       input: {
         tienda: fileURLToPath(new URL('./visualizacion_productos/index.html', import.meta.url)),
