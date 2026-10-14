@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD Productos Gamer</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- CARGA TU ARCHIVO LOCAL -->
+    <script src="../../visualizacion_productos/src/productos.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h1>Panel CRUD • Productos Gamer</h1>
+    <p>Leyendo directamente desde <code>productos.js</code> y guardando cambios en el navegador.</p>
+    
+    <div style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+        <input type="text" id="buscador" oninput="renderizarTabla()" placeholder="Buscar por nombre o código..." style="width: 300px; margin: 0;">
+        <button class="btn" onclick="abrirModal()">+ Nuevo Producto</button>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Código</th>
+                <th>Imagen</th>
+                <th>Nombre</th>
+                <th>Categoría</th>
+                <th>Precio</th>
+                <th>Stock</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-body">
+            <!-- Se llena por JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal para Crear / Editar -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-titulo">Nuevo Producto</h3>
+        <form id="form" onsubmit="guardar(event)">
+            <input type="hidden" id="edit-codigo">
+            
+            <label>Código:</label>
+            <input type="text" id="codigo" required placeholder="Ej: P022">
+            
+            <label>Nombre:</label>
+            <input type="text" id="nombre" required>
+            
+            <label>Categoría:</label>
+            <input type="text" id="categoria" required>
+            
+            <label>Precio ($):</label>
+            <input type="number" id="precio" required min="0">
+            
+            <label>Stock:</label>
+            <input type="number" id="stock" required min="0">
+            
+            <label>URL Imagen:</label>
+            <input type="url" id="imagen" required>
+            
+            <label>Descripción:</label>
+            <textarea id="descripcion" rows="3"></textarea>
+
+            <div style="text-align: right;">
+                <button type="button" class="btn btn-danger" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
