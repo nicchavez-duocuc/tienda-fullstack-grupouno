@@ -39,3 +39,6 @@ canjear por productos y descuentos.
 ❖ Reseñas y Calificaciones: Chavez
 
 o Permitir a los clientes dejar reseñas y calificar los productos comprados
+
+❖ Link de las dependencia Spring
+https://start.spring.io/#!type=maven-project&language=java&platformVersion=4.1.1&packaging=jar&configurationFileFormat=properties&jvmVersion=21&groupId=com.example&artifactId=demo&packageName=com.example.demo&dependencies=mysql,mariadb,web,lombok,data-jpa,flyway,validation,cloud-feign,security,cloud-eureka
