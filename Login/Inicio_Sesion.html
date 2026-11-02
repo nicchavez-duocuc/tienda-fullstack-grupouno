@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Inicio Sesion - Comunidad Gamer</title>
+    <link rel="stylesheet" href="estilos_login.css">
+</head>
+
+<body>
+    <!--
+        Toda la página la dibuja React (src/mainLogin.jsx): el título de arriba,
+        la tarjeta con el formulario y el enlace "Crear Cuenta". Antes todo eso
+        estaba escrito acá a mano; ahora este HTML es solo la cáscara.
+
+        style="display: contents" hace que este div no cuente como una caja:
+        así el título y la tarjeta siguen siendo hijos directos del body y
+        el CSS que los centra (body { display: flex }) funciona igual que antes.
+    -->
+    <div id="react-login-root" style="display: contents"></div>
+
+    <script type="module" src="./src/mainLogin.jsx"></script>
+</body>
+</html>

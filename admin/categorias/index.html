@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>CRUD • Categorías Gamer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Panel CRUD • Categorías Gamer</h1>
+    <p>Administración de categorías sincronizada con <code>categorias.js</code> y <code>localStorage</code>.</p>
+    
+    <div class="header-actions">
+        <input type="text" id="buscador" oninput="renderizarTabla()" placeholder="Buscar categoría..." style="width: 300px; margin: 0;">
+        <div>
+            <button class="btn" onclick="abrirModal()">+ Nueva Categoría</button>
+            <button class="btn btn-export" onclick="descargarJsActualizado()">Exportar categorias.js</button>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Nombre de la Categoría</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="tabla-body">
+            <!-- Se llena por JavaScript -->
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal para Crear / Editar -->
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <h3 id="modal-titulo">Nueva Categoría</h3>
+        <form id="form" onsubmit="guardar(event)">
+            <input type="hidden" id="edit-index">
+            
+            <label>Nombre de la Categoría:</label>
+            <input type="text" id="nombre-categoria" required placeholder="Ej: Realidad Virtual">
+
+            <div style="text-align: right; margin-top: 10px;">
+                <button type="button" class="btn btn-danger" onclick="cerrarModal()">Cancelar</button>
+                <button type="submit" class="btn">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script type="module" src="script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard • Tienda Gamer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Dashboard Principal • Panel Admin</h1>
+    <p>Bienvenido al sistema de administración centralizado de la tienda gamer. Desde aquí puedes gestionar de forma rápida las distintas secciones del proyecto.</p>
+
+    <!-- Barra de resumen rápido de datos -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span id="stat-productos">-</span>
+            <label>Productos Activos</label>
+        </div>
+        <div class="stat-item">
+            <span id="stat-categorias">-</span>
+            <label>Categorías</label>
+        </div>
+        <div class="stat-item">
+            <span id="stat-usuarios">-</span>
+            <label>Usuarios Registrados</label>
+        </div>
+    </div>
+
+    <!-- Tarjetas con los enlaces solicitados -->
+    <div class="grid">
+        <!-- Gestión de Productos -->
+        <a href="../productos/index.html" class="card">
+            <div>
+                <h3>📦 Productos</h3>
+                <p>Administra el inventario del catálogo, precios, stock, descripciones e imágenes de los artículos gamer.</p>
+            </div>
+            <span class="btn-link">Gestionar Productos</span>
+        </a>
+
+        <!-- Gestión de Categorías -->
+        <a href="../categorias/index.html" class="card">
+            <div>
+                <h3>🏷️ Categorías</h3>
+                <p>Agrega, edita o elimina las categorías oficiales disponibles para clasificar el inventario de la tienda.</p>
+            </div>
+            <span class="btn-link">Gestionar Categorías</span>
+        </a>
+
+        <!-- Gestión de Usuarios -->
+        <a href="../usuarios/index.html" class="card">
+            <div>
+                <h3>👥 Usuarios</h3>
+                <p>Visualiza y administra las cuentas de usuarios registrados, roles y control de accesos al sistema.</p>
+            </div>
+            <span class="btn-link">Gestionar Usuarios</span>
+        </a>
+    </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
