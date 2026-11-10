@@ -4,45 +4,22 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Editar Perfil - Comunidad Gamer</title>
+        <link rel="stylesheet" href="../estilo_general.css">
         <link rel="stylesheet" href="estilos_perfil.css">
     </head>
     <body>
-        <header>
-            <h1>Bienvenido Comunidad Gamer</h1>
-        </header>
-        <main>
-            <section class="profile-container">
-                <span class="sutitle">Ajustes de Usuario</span>
-                <h2>Editar Perfil</h2>
+        <!--
+            Toda la página la dibuja React (src/main.jsx): el título de arriba, la
+            tarjeta con la foto, el formulario y el enlace "Volver a la Tienda".
+            Antes todo eso estaba escrito acá a mano; ahora este HTML es solo la
+            cáscara. usuarios.js ya no se usa.
 
-                <!-- ID corregido sin espacio al final -->
-                <form id="profile-form">
-                    <div class="profile-avatar-container">
-                        <img id="avatar-preview" src="https://ui-avatars.com/api/?name=Gamer&background=1E90FF&color=fff" alt="Foto de Perfil" onclick="document.getElementById('avatar-input').click();">
-                        <span class="btn-avatar" onclick="document.getElementById('avatar-input').click();">CAMBIAR FOTO</span>
-                        <input type="file" id="avatar-input" accept="image/*" style="display: none;">
-                    </div>
-                    <div class="input-group">
-                        <label for="apodo">Apodo</label>
-                        <input type="text" id="apodo" name="apodo" placeholder="tu apodo Gamer" required>
-                    </div>
-                    <div class="input-group">
-                        <h2>¿Quieres cambiar tu clave?</h2>
-                        <label for="clave-anterior">Clave actual</label>
-                        <input type="password" id="clave-anterior" name="clave-anterior" placeholder="*******">
-                    </div>
-                    <div class="input-group">
-                        <label for="clave-nueva">Nueva Clave</label>
-                        <input type="password" id="clave-nueva" name="clave-nueva" placeholder="******">
-                    </div>
-                    <button type="submit" id="btn-guardar">Guardar Cambios</button>
-                </form>
+            style="display: contents" hace que este div no cuente como una caja:
+            así el título y la tarjeta siguen siendo hijos directos del body y
+            el CSS que los centra (body { display: flex }) funciona igual que antes.
+        -->
+        <div id="react-perfil-root" style="display: contents"></div>
 
-                <div class="navigation-link">
-                    <a href="../visualizacion_productos/index.html" id="link-volver">&larr; Volver a la Tienda</a>
-                </div>
-            </section>
-        </main>
-        <script src="../Login/usuarios.js"></script>
+        <script type="module" src="./src/main.jsx"></script>
     </body>
 </html>

@@ -5,9 +5,7 @@
 import Precio from "../atoms/Precio.jsx";
 import Texto from "../atoms/Texto.jsx";
 
-const FACTOR_DUOC = 0.8; // 20% de descuento
-
-export default function PrecioProducto({ precio, esDuoc }) {
+export default function PrecioProducto({ precio, precioDescuento, esDuoc }) {
     if (!esDuoc) {
         return (
             <Texto estilo={{ fontWeight: "bold", color: "#1E90FF", fontSize: "1.1rem", marginTop: 5 }}>
@@ -30,7 +28,7 @@ export default function PrecioProducto({ precio, esDuoc }) {
                 <Precio valor={precio} />
             </Texto>
             <Texto estilo={{ fontWeight: "bold", color: "#39FF14", fontSize: "1.1rem", marginTop: 2 }}>
-                <Precio valor={Math.round(precio * FACTOR_DUOC)} />{" "}
+                <Precio valor={precioDescuento} />{" "}
                 <span style={{ fontSize: "0.8rem", color: "#39FF14" }}>(20% OFF)</span>
             </Texto>
         </>

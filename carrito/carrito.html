@@ -8,27 +8,14 @@
     <link rel="stylesheet" href="estilo_carrito.css">
 </head>
 <body>
-    <header>
-        <div class="logo-container">
-            <h1>LEVEL-UP GAMER</h1>
-        </div>
-        <a href="../visualizacion_productos/index.html" class="btn-volver">⬅ Volver a la Tienda</a>
-    </header>
+    <!--
+        Toda la página la dibuja React (src/main.jsx): el header con el botón
+        "Volver a la Tienda", el título, la lista del carrito, el total y el
+        modal de confirmación. Antes el header y el título estaban escritos
+        acá a mano; ahora este HTML es solo la cáscara.
+    -->
+    <div id="react-carrito-root"></div>
 
-    <main>
-        <section class="cart-section">
-            <h2>Tu Carrito de Compras 🛒</h2>
-
-            <!--
-                Antes acá iban #cart-container, .cart-summary (total + botones)
-                y, al final de la página, el #modal-confirmacion. Todo eso lo
-                dibuja ahora React desde src/Carrito.jsx dentro de este div.
-            -->
-            <div id="react-carrito-root"></div>
-        </section>
-    </main>
-
-    <!-- script_carrito.js ya no se carga: su lógica pasó completa a src/Carrito.jsx -->
-    <script type="module" src="../carrito/src/main.jsx"></script>
+    <script type="module" src="./src/main.jsx"></script>
 </body>
 </html>

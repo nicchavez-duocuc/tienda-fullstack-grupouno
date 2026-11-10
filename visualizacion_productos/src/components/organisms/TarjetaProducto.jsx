@@ -31,8 +31,8 @@ export default function TarjetaProducto({ producto, esDuoc, onVerDetalle, onAgre
                 onClick={() => onVerDetalle(producto.codigo)}
             />
             <Titulo>{producto.nombre}</Titulo>
-            <Texto>Categoría: {producto.categoria}</Texto>
-            <PrecioProducto precio={producto.precio} esDuoc={esDuoc} />
+            <Texto>Categoría: {producto.categoria?.nombre || producto.categoria}</Texto>
+            <PrecioProducto precio={producto.precio} precioDescuento={producto.precioDescuento} esDuoc={esDuoc} />
             <Boton estilo={ESTILO_BOTON_AGREGAR} onClick={() => onAgregar(producto.codigo)}>
                 Añadir al Carrito
             </Boton>
