@@ -1,26 +1,48 @@
-    // Importación con la ruta exacta solicitada
-    import { CATEGORIAS as categoriasOriginales } from '../../visualizacion_productos/src/categorias.js';
+// admin/categorias/script.js
+// CRUD de categorias contra el backend de Spring Boot:
+//   GET    /api/v1/categorias       -> [{id, nombre, descripcion}]
+//   POST   /api/v1/categorias
+//   PUT    /api/v1/categorias/{id}
+//   DELETE /api/v1/categorias/{id}
+// Solo ADMIN tiene permiso. La categoria "Todos" era solo del buscador de la
+// tienda, por eso ya no vive en esta lista (la agrega el frontend solito).
+
+    const BASE = "http://localhost:8080/api/v1";
+
+    function encabezados() {
+        return {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + (localStorage.getItem("jwtActivo") || "")
+        };
+    }
+
+    function manejarError(err, cayoSesion) {
+        if (cayoSesion) {
+            alert("Necesitas iniciar sesión como ADMIN para usar este panel.");
+            window.location.href = "../Login/Inicio_Sesion.html";
+        } else {
+            alert("Error: " + (err.mensaje || "no se pudo contactar al servidor"));
+        }
+    }
 
     let listaCategorias = [];
 
-    function cargarDatos() {
-        const local = localStorage.getItem('categoriasGamer');
-        if (local) {
-            try { return JSON.parse(local); } catch(e) {}
+    async function cargarDatos() {
+        try {
+            const respuesta = await fetch(BASE + "/categorias", { headers: encabezados() });
+            if (respuesta.status === 401 || respuesta.status === 403) {
+                manejarError({}, true);
+                return;
+            }
+            listaCategorias = await respuesta.json(); // [{id, nombre, descripcion}]
+            renderizarTabla();
+        } catch (e) {
+            manejarError({ mensaje: e.message }, false);
         }
-        return categoriasOriginales;
-    }
-
-    function sincronizar(nuevaLista) {
-        listaCategorias = nuevaLista;
-        window.CATEGORIAS = listaCategorias;
-        localStorage.setItem('categoriasGamer', JSON.stringify(listaCategorias));
-        renderizarTabla();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        listaCategorias = cargarDatos();
-        sincronizar(listaCategorias);
+        cargarDatos();
     });
 
     window.renderizarTabla = function() {
@@ -28,22 +50,21 @@
         const filtro = document.getElementById('buscador').value.toLowerCase();
         tbody.innerHTML = '';
 
-        const filtradas = listaCategorias.filter((cat) => 
-            cat.toLowerCase().includes(filtro)
+        const filtradas = listaCategorias.filter((categoria) =>
+            categoria.nombre.toLowerCase().includes(filtro)
         );
 
-        filtradas.forEach((cat) => {
-            const realIndex = listaCategorias.indexOf(cat);
-            const esTodos = cat.toLowerCase() === "todos";
+        filtradas.forEach((categoria) => {
+            const numeracion = listaCategorias.indexOf(categoria);
 
             const tr = document.createElement('tr');
             tr.innerHTML = `
-                <td><b>${realIndex + 1}</b></td>
-                <td>${cat}</td>
+                <td><b>${numeracion + 1}</b></td>
+                <td>${categoria.nombre}</td>
                 <td>
                     <div class="actions">
-                        <button class="btn btn-edit" onclick="window.editar(${realIndex})">Editar</button>
-                        ${!esTodos ? `<button class="btn btn-danger" onclick="window.eliminar(${realIndex})">Eliminar</button>` : '<span style="font-size:12px; color:#888; padding:5px;">(Protegida)</span>'}
+                        <button class="btn btn-edit" onclick="window.editar(${categoria.id})">Editar</button>
+                        <button class="btn btn-danger" onclick="window.eliminar(${categoria.id})">Eliminar</button>
                     </div>
                 </td>
             `;
@@ -58,13 +79,13 @@
         document.getElementById('modal').style.display = 'flex';
     }
 
-    window.editar = function(index) {
-        const cat = listaCategorias[index];
-        if (!cat) return;
+    window.editar = function(id) {
+        const categoria = listaCategorias.find(c => c.id === id);
+        if (!categoria) return;
 
         document.getElementById('modal-titulo').innerText = 'Editar Categoría';
-        document.getElementById('edit-index').value = index;
-        document.getElementById('nombre-categoria').value = cat;
+        document.getElementById('edit-index').value = id;
+        document.getElementById('nombre-categoria').value = categoria.nombre;
 
         document.getElementById('modal').style.display = 'flex';
     }
@@ -73,44 +94,54 @@
         document.getElementById('modal').style.display = 'none';
     }
 
-    window.guardar = function(event) {
+    window.guardar = async function(event) {
         event.preventDefault();
-        const editIndex = document.getElementById('edit-index').value;
+        const editId = document.getElementById('edit-index').value;
         const nombre = document.getElementById('nombre-categoria').value.trim();
 
         if (!nombre) return;
 
-        if (listaCategorias.map(c => c.toLowerCase()).includes(nombre.toLowerCase()) && editIndex === "") {
-            alert('Esta categoría ya existe.');
-            return;
-        }
+        try {
+            const respuesta = await fetch(BASE + "/categorias" + (editId ? "/" + editId : ""), {
+                method: editId ? 'PUT' : 'POST',
+                headers: encabezados(),
+                body: JSON.stringify({ nombre: nombre, descripcion: "" })
+            });
 
-        let nuevaLista = [...listaCategorias];
-        if (editIndex !== "") {
-            nuevaLista[Number(editIndex)] = nombre;
-        } else {
-            nuevaLista.push(nombre);
-        }
+            if (respuesta.status === 401 || respuesta.status === 403) {
+                manejarError({}, true);
+                return;
+            }
+            if (!respuesta.ok) {
+                const error = await respuesta.json();
+                alert('Error: ' + (error.mensaje || error.error || 'no se pudo guardar'));
+                return;
+            }
 
-        sincronizar(nuevaLista);
-        window.cerrarModal();
+            await cargarDatos(); // vuelve a leer la tabla desde la base de datos
+            window.cerrarModal();
+        } catch (e) {
+            manejarError({ mensaje: e.message }, false);
+        }
     }
 
-    window.eliminar = function(index) {
-        const cat = listaCategorias[index];
-        if (!confirm(`¿Estás seguro de eliminar la categoría "${cat}"?`)) return;
+    window.eliminar = async function(id) {
+        const categoria = listaCategorias.find(c => c.id === id);
+        if (!confirm(`¿Estás seguro de eliminar la categoría "${categoria ? categoria.nombre : ''}"?`)) return;
 
-        const nuevaLista = listaCategorias.filter((_, i) => i !== index);
-        sincronizar(nuevaLista);
-    }
-
-    window.descargarJsActualizado = function() {
-        const contenido = `// categorias.js actualizadas\nexport const CATEGORIAS = ${JSON.stringify(listaCategorias, null, 4)};\n\nif (typeof window !== "undefined") {\n    window.CATEGORIAS = CATEGORIAS;\n}`;
-        const blob = new Blob([contenido], { type: 'text/javascript' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'categorias.js';
-        a.click();
-        URL.revokeObjectURL(url);
+        try {
+            const respuesta = await fetch(BASE + "/categorias/" + id, { method: 'DELETE', headers: encabezados() });
+            if (respuesta.status === 401 || respuesta.status === 403) {
+                manejarError({}, true);
+                return;
+            }
+            if (!respuesta.ok) {
+                const error = await respuesta.json();
+                alert('Error: ' + (error.mensaje || error.error || 'no se pudo eliminar'));
+                return;
+            }
+            await cargarDatos();
+        } catch (e) {
+            manejarError({ mensaje: e.message }, false);
+        }
     }

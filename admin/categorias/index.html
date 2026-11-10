@@ -15,7 +15,8 @@
         <input type="text" id="buscador" oninput="renderizarTabla()" placeholder="Buscar categoría..." style="width: 300px; margin: 0;">
         <div>
             <button class="btn" onclick="abrirModal()">+ Nueva Categoría</button>
-            <button class="btn btn-export" onclick="descargarJsActualizado()">Exportar categorias.js</button>
+            <!-- La exportación de categorias.js ya no es necesaria: las categorías
+                 viven en la base de datos y el backend las entrega por /api/v1/categorias -->
         </div>
     </div>
 

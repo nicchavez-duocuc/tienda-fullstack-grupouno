@@ -1,41 +1,28 @@
-    // Carga de datos simulados/reales desde localStorage para llenar métricas informativas en el dashboard
-    document.addEventListener('DOMContentLoaded', () => {
-        // Productos
-        try {
-            const prodLocal = localStorage.getItem('productosGamer');
-            if (prodLocal) {
-                const parsed = JSON.parse(prodLocal);
-                document.getElementById('stat-productos').textContent = parsed.length;
-            } else {
-                document.getElementById('stat-productos').textContent = '21'; // Valor por defecto base
-            }
-        } catch(e) {
-            document.getElementById('stat-productos').textContent = '21';
-        }
+    // Carga de métricas del dashboard desde el backend (solo ADMIN):
+    // GET /api/v1/dashboard -> { productos, categorias, usuarios, pedidos }
+    document.addEventListener('DOMContentLoaded', async () => {
+        const BASE = "http://localhost:8080/api/v1";
+        const encabezados = {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + (localStorage.getItem("jwtActivo") || "")
+        };
 
-        // Categorías
         try {
-            const catLocal = localStorage.getItem('categoriasGamer');
-            if (catLocal) {
-                const parsed = JSON.parse(catLocal);
-                document.getElementById('stat-categorias').textContent = parsed.length;
-            } else {
-                document.getElementById('stat-categorias').textContent = '11'; // Valor por defecto base
-            }
-        } catch(e) {
-            document.getElementById('stat-categorias').textContent = '11';
-        }
+            const respuesta = await fetch(BASE + "/dashboard", { headers: encabezados });
 
-        // Usuarios (lee de localStorage o asigna un valor referencial si no existe aún)
-        try {
-            const userLocal = localStorage.getItem('usuarios') || localStorage.getItem('usuariosGamer');
-            if (userLocal) {
-                const parsed = JSON.parse(userLocal);
-                document.getElementById('stat-usuarios').textContent = parsed.length;
-            } else {
-                document.getElementById('stat-usuarios').textContent = '4';
+            // Sin sesión (401) o sin permiso (403): ir a iniciar sesión
+            if (respuesta.status === 401 || respuesta.status === 403) {
+                alert("Necesitas iniciar sesión como ADMIN para ver el dashboard.");
+                window.location.href = "../Login/Inicio_Sesion.html";
+                return;
             }
-        } catch(e) {
-            document.getElementById('stat-usuarios').textContent = '4';
+
+            const metricas = await respuesta.json();
+
+            document.getElementById('stat-productos').textContent = metricas.productos ?? '-';
+            document.getElementById('stat-categorias').textContent = metricas.categorias ?? '-';
+            document.getElementById('stat-usuarios').textContent = metricas.usuarios ?? '-';
+        } catch (e) {
+            alert("No se pudo contactar al backend: " + e.message);
         }
     });

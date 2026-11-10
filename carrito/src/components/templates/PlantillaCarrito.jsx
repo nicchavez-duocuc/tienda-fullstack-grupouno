@@ -1,14 +1,22 @@
 // PLANTILLA: PlantillaCarrito
-// Define el ORDEN de la página: lista de ítems, resumen con el total y, al
-// final, el modal de confirmación. No sabe qué contiene cada parte; la página
-// le entrega las piezas armadas.
-// (El header sigue en carrito.html, fuera de React.)
+// El diseño completo de la página del carrito: el header arriba, la sección
+// central (título, lista de ítems y resumen con el total) y, al final, el
+// modal de confirmación. No sabe qué contiene cada parte; la página le
+// entrega las piezas armadas.
 
-export default function PlantillaCarrito({ lista, resumen, modal }) {
+import Titulo from "../atoms/Titulo.jsx";
+
+export default function PlantillaCarrito({ encabezado, titulo, lista, resumen, modal }) {
     return (
         <>
-            {lista}
-            {resumen}
+            {encabezado}
+            <main>
+                <section className="cart-section">
+                    <Titulo nivel={2}>{titulo}</Titulo>
+                    {lista}
+                    {resumen}
+                </section>
+            </main>
             {modal}
         </>
     );

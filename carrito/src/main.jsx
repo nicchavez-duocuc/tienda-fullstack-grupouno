@@ -1,4 +1,7 @@
-// Busca #react-carrito-root en carrito.html y monta ahí la página del carrito.
+// main.jsx
+// Punto de entrada de React para carrito.html. Busca el div
+// #react-carrito-root y monta ahí la página completa del carrito
+// (header, título, lista, resumen y modal).
 
 import React from "react";
 import ReactDOM from "react-dom/client";

@@ -1,0 +1,10 @@
+com/fullstack/productos/dto/RegistroSolicitud.class
+com/fullstack/productos/Controller/CarritoController.class
+com/fullstack/productos/security/JwtServicio.class
+com/fullstack/productos/Repository/UsuarioRepository.class
+com/fullstack/productos/Service/AuthService.class
+com/fullstack/productos/dto/SesionRespuesta.class
+com/fullstack/productos/model/Usuario.class
+com/fullstack/productos/dto/LoginSolicitud.class
+com/fullstack/productos/Controller/AuthController.class
+com/fullstack/productos/dto/UsuarioRespuesta.class
