@@ -1,17 +1,53 @@
 // hooks/useCatalogo.jsx
 // Estado y lógica de la lista de productos: texto de búsqueda, categoría
-// seleccionada y lista filtrada. Reemplaza a filtrarPorTexto() y filtrarProductos().
-// Ya no depende de nada de Script.js.
+// seleccionada y lista filtrada. El catálogo se carga desde el backend
+// (GET /api/v1/productos y /api/v1/categorias); si el backend no responde,
+// se usa el catálogo de respaldo de productos.js para que la tienda no quede vacía.
 
-import { useState, useMemo } from "react";
-import { productos } from "../productos.js";
+import { useState, useMemo, useEffect } from "react";
+import { productos as productosRespaldo } from "../productos.js";
 import { CATEGORIAS } from "../categorias.jsx";
 import { esUsuarioDuoc } from "../services/usuarios.jsx";
 import { aplicarDescuentoDuoc } from "../services/precios.jsx";
+import { cargarProductos, cargarCategorias } from "../services/catalogo.jsx";
 
 export function useCatalogo() {
     const [categoria, setCategoria] = useState("Todos");
     const [busqueda, setBusqueda] = useState("");
+    const [productos, setProductos] = useState([]);
+    const [categorias, setCategorias] = useState(CATEGORIAS);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState("");
+
+    // Se carga el catálogo al abrir la página (una sola vez)
+    useEffect(() => {
+        let activo = true;
+
+        Promise.all([cargarProductos(), cargarCategorias()])
+            .then(([listaProductos, listaCategorias]) => {
+                if (!activo) return;
+                setProductos(listaProductos);
+
+                // "Todos" + categorías del backend + las que aparezcan en productos
+                const categoriasDeProductos = listaProductos.map((p) => p.categoria).filter(Boolean);
+                const unicas = [...new Set([...listaCategorias, ...categoriasDeProductos])];
+                setCategorias(["Todos", ...unicas]);
+            })
+            .catch(() => {
+                if (!activo) return;
+                // Respaldo local si el backend está apagado
+                setProductos(productosRespaldo);
+                setCategorias(CATEGORIAS);
+                setError("No se pudo conectar con el servidor. Mostrando el catálogo local.");
+            })
+            .finally(() => {
+                if (activo) setCargando(false);
+            });
+
+        return () => {
+            activo = false;
+        };
+    }, []);
 
     // Se recalcula en cada render, igual que antes
     const esDuoc = esUsuarioDuoc();
@@ -27,7 +63,7 @@ export function useCatalogo() {
                 return coincideCategoria && coincideNombre;
             })
             .map((producto) => ({ ...producto, precioDescuento: aplicarDescuentoDuoc(producto.precio) }));
-    }, [categoria, busqueda]);
+    }, [productos, categoria, busqueda]);
 
     // Mientras hay texto en el buscador, ninguna categoría se ve activa
     const categoriaActiva = busqueda.trim() === "" ? categoria : null;
@@ -46,11 +82,14 @@ export function useCatalogo() {
     }
 
     return {
-        categorias: CATEGORIAS,
+        productos,
+        categorias,
         categoriaActiva,
         busqueda,
         productosFiltrados,
         esDuoc,
+        cargando,
+        error,
         buscar,
         filtrarPorCategoria
     };

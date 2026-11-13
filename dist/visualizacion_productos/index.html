@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEVEL-UP GAMER | Home</title>
+  <script type="module" crossorigin src="/assets/tienda-DKxMhsr3.js"></script>
+  <link rel="modulepreload" crossorigin href="/assets/jsx-runtime-JFB3-ff-.js">
+  <link rel="stylesheet" crossorigin href="/assets/tienda-CtffkmM9.css">
+  <link rel="stylesheet" crossorigin href="/assets/estilo_general-uzNidejh.css">
+</head>
+<body>
+    <header>
+        <div class="logo-container" style="display: flex; align-items: center; gap: 20px;">
+            <h1 style="margin: 0;">LEVEL-UP GAMER</h1>
+
+            <!-- Antes acá iba el botón "Ver Mapa" con onclick="abrirModalImagen()".
+                 Ahora lo dibuja React (con su modal) dentro de este div. -->
+            <div id="react-mapa-root"></div>
+
+            <a href="../blogs/blog.html" style="margin: 0; text-decoration: none; background-color: transparent; border: 2px solid #39FF14; color: #39FF14; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#39FF14'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#39FF14';">
+                📰 Blog
+            </a>
+        </div>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="../carrito/carrito.html" class="btn-primary" style="background-color: #39FF14; color: black; font-weight: bold; margin: 0;">
+                Ver Carrito 🛒
+            </a>
+            <!-- Antes acá iba la foto y el apodo del usuario, que actualizaba usuarios.js.
+                 Ahora los dibuja React. display: contents hace que este div no cuente
+                 como caja, así el enlace sigue alineado igual en el header. -->
+            <div id="react-usuario-root" style="display: contents"></div>
+        </div>
+
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <h2>Bienvenido a la mejor tienda Gamer de Chile</h2>
+            <p>Encuentra consolas, accesorios, computadores y sillas especializadas.</p>
+        </section>
+
+        <section class="products-section">
+            <h3 style="text-align: center; margin-bottom: 20px;">Productos Destacados</h3>
+
+            <!--
+                Antes acá iban .search-container, .category-filters y
+                #product-list, armados a mano desde Script.js. Ahora esta
+                sección (buscador, filtros, productos y sus modales) la
+                dibuja React dentro de este div.
+            -->
+            <div id="react-productos-root"></div>
+        </section>
+    </main>
+    <!-- Reseñas y calificaciones: antes era HTML fijo manejado desde Script.js.
+         Ahora lo dibuja React dentro de este div. -->
+    <div id="react-resenas-root"></div>
+
+    <footer>
+        <p>&copy; 2024 LEVEL-UP GAMER. Todos los derechos reservados.</p>
+
+        <!-- contacto de mi whatsApp porque nesecitabamos uno XD -->
+        <div style="margin: 20px 0;">
+            <a href="https://wa.me/56944487210" target="_blank" style="color: #39FF14; text-decoration: none; font-size: 1.2rem; font-weight: bold; transition: color 0.3s;">
+                🟢 Contáctanos por WhatsApp: +56 9 4448 7210
+            </a>
+        </div>
+
+        <div class="newsletter">
+            <label for="email-news">Únete a nuestro Newsletter:</label>
+            <input type="email" id="email-news" placeholder="Ingresa tu correo">
+            <button class="btn-secondary">Suscribirse</button>
+        </div>
+    </footer>
+
+    <!-- Los modales de "producto agregado", "detalle del producto" y "mapa"
+         ya no están acá: los dibuja React cuando hacen falta. -->
+
+    <!-- Todo el JavaScript de esta página es React (src/main.jsx). -->
+</body>
+</html>

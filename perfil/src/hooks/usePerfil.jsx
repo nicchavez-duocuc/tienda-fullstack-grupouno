@@ -1,17 +1,12 @@
 // hooks/usePerfil.jsx
 // Estado y lógica de la página de perfil: datos del usuario, foto, cambio de
-// clave y guardado. Reemplaza el bloque "1. LÓGICA DEL PERFIL" de usuarios.js.
-//
-// Cambios respecto al original:
-//  - Los 2 alert() de validación de la clave ahora son un mensaje bajo el
-//    formulario. El alert() de "Perfil actualizado" se dejó igual.
-//  - Si no hay sesión, el aviso lleva al login de verdad
-//    (../login/Inicio_Sesion.html). Antes iba a "Inicio_Sesion.html", que no
-//    existe dentro de la carpeta perfil.
+// clave y guardado. Ahora guarda contra el backend (PUT /api/v1/usuarios/me),
+// usando el token JWT que dejó el login. Si no hay sesión, manda al login.
 
 import { useState, useEffect, useRef } from "react";
 import { obtenerUsuarioActivo, guardarPerfil } from "../services/usuarios.jsx";
 import { AVATAR_POR_DEFECTO, leerArchivoComoBase64 } from "../services/avatar.jsx";
+import { actualizarMiPerfil, haySesion, ErrorSesion } from "../services/api.jsx";
 
 export function usePerfil() {
     // El usuario se lee UNA vez, al abrir la página
@@ -35,10 +30,10 @@ export function usePerfil() {
     // dos veces (en desarrollo React ejecuta los efectos dos veces).
     const avisoMostrado = useRef(false);
     useEffect(() => {
-        if (!usuario && !avisoMostrado.current) {
+        if ((!usuario || !haySesion()) && !avisoMostrado.current) {
             avisoMostrado.current = true;
             alert("No hay una sesión activa. Redirigiendo al Login.");
-            window.location.href = "../login/Inicio_Sesion.html";
+            window.location.href = "../Login/Inicio_Sesion.html";
         }
     }, [usuario]);
 
@@ -52,38 +47,48 @@ export function usePerfil() {
         leerArchivoComoBase64(archivo).then((base64) => setAvatar((anterior) => ({ ...anterior, base64 })));
     }
 
-    function enviar(event) {
+    async function enviar(event) {
         event.preventDefault();
         setError("");
 
-        // Se lee de nuevo, por si la sesión cambió en otra pestaña
         const actual = obtenerUsuarioActivo();
-        if (!actual) return;
+        if (!actual || !haySesion()) {
+            window.location.href = "../Login/Inicio_Sesion.html";
+            return;
+        }
 
         const apodo = valores.apodo.trim();
         const claveAnterior = valores.claveAnterior.trim();
         const claveNueva = valores.claveNueva.trim();
 
-        let clave = actual.clave;
-        if (claveAnterior || claveNueva) {
-            if (claveAnterior !== actual.clave) {
-                setError("Error: La contraseña actual es incorrecta.");
-                return;
-            }
-            if (!claveNueva) {
-                setError("Por favor ingresa la nueva contraseña.");
-                return;
-            }
-            clave = claveNueva;
+        if (claveAnterior && !claveNueva) {
+            setError("Por favor ingresa la nueva contraseña.");
+            return;
         }
 
-        const actualizado = { ...actual, clave, apodo };
-        if (avatar.base64) actualizado.avatar = avatar.base64;
+        const cambios = { apodo };
+        if (avatar.base64) cambios.avatar = avatar.base64;
+        if (claveAnterior || claveNueva) {
+            cambios.claveAnterior = claveAnterior;
+            cambios.claveNueva = claveNueva;
+        }
 
-        guardarPerfil(actualizado);
+        try {
+            const actualizado = await actualizarMiPerfil(cambios);
 
-        setValores((anteriores) => ({ ...anteriores, claveAnterior: "", claveNueva: "" }));
-        alert("¡Perfil actualizado con éxito!");
+            // Se refleja el cambio de inmediato en el header y en el resto de la tienda
+            guardarPerfil({ ...actual, ...actualizado });
+
+            setValores((anteriores) => ({ ...anteriores, claveAnterior: "", claveNueva: "" }));
+            alert("¡Perfil actualizado con éxito!");
+        } catch (e) {
+            if (e instanceof ErrorSesion) {
+                alert(e.message);
+                window.location.href = "../Login/Inicio_Sesion.html";
+                return;
+            }
+            setError(e?.message || "No se pudo actualizar el perfil.");
+        }
     }
 
     return { valores, vistaPreviaAvatar: avatar.vistaPrevia, error, cambiarCampo, cambiarAvatar, enviar };

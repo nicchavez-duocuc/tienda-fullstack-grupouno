@@ -1,14 +1,9 @@
 // hooks/useRegistro.jsx
-// Estado y lógica del formulario de registro, con sus validaciones. Reemplaza
-// el bloque "2. LÓGICA DE REGISTRO" de usuarios.js.
-//
-// Usa los servicios (calcular edad y guardar el usuario). Cambio respecto al
-// original: los 3 alert() de validación (campos vacíos, menor de edad,
-// términos sin aceptar) ahora son un mensaje bajo el formulario. El alert()
-// de "cuenta creada con éxito" se dejó igual, antes de redirigir.
+// Estado y lógica del formulario de registro, con sus validaciones. Crea la
+// cuenta en el backend (POST /api/v1/auth/registrar) y luego manda al login.
 
 import { useState } from "react";
-import { registrarUsuario } from "../services/usuarios.jsx";
+import { registrarUsuarioBackend } from "../services/api.jsx";
 import { calcularEdad } from "../services/edad.jsx";
 
 const VALORES_INICIALES = {
@@ -23,12 +18,13 @@ const VALORES_INICIALES = {
 export function useRegistro() {
     const [valores, setValores] = useState(VALORES_INICIALES);
     const [error, setError] = useState("");
+    const [cargando, setCargando] = useState(false);
 
     function cambiarCampo(campo, valor) {
         setValores((anteriores) => ({ ...anteriores, [campo]: valor }));
     }
 
-    function enviar(event) {
+    async function enviar(event) {
         event.preventDefault();
         setError("");
 
@@ -52,11 +48,25 @@ export function useRegistro() {
             return;
         }
 
-        registrarUsuario({ nombre, apellido, fecha: valores.fecha, correo, clave });
+        setCargando(true);
 
-        alert("¡Cuenta creada con éxito! Ahora puedes iniciar sesión.");
-        window.location.href = "Inicio_Sesion.html";
+        try {
+            await registrarUsuarioBackend({
+                nombre,
+                apellido,
+                fecha: valores.fecha,
+                correo,
+                clave
+            });
+
+            alert("¡Cuenta creada con éxito! Ahora puedes iniciar sesión.");
+            window.location.href = "Inicio_Sesion.html";
+        } catch (e) {
+            setError(e?.message || "No se pudo crear la cuenta.");
+        } finally {
+            setCargando(false);
+        }
     }
 
-    return { valores, error, cambiarCampo, enviar };
+    return { valores, error, cargando, cambiarCampo, enviar };
 }

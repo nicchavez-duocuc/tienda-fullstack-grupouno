@@ -1,23 +1,41 @@
 // hooks/useResenas.jsx
 // Estado y lógica del sistema de reseñas: lista publicada y formulario.
-// Reemplaza a cargarOpcionesProductosResena(), renderizarResenas() y
-// guardarResena() de Script.js.
+// El selector de productos se llena desde el backend para incluir también los
+// productos nuevos creados en el panel ADMIN.
 
-import { useState } from "react";
-import { productos } from "../productos.js";
+import { useState, useEffect } from "react";
+import { productos as productosRespaldo } from "../productos.js";
+import { cargarProductos } from "../services/catalogo.jsx";
 import { leerResenas, guardarResena, OPCIONES_PUNTUACION } from "../services/resenas.jsx";
 
 const VALORES_INICIALES = { producto: "", nombre: "", puntuacion: "5", comentario: "" };
+const OPCION_VACIA = { valor: "", texto: "Selecciona un producto..." };
 
-// Opciones del selector de productos: una vacía de aviso y una por producto
-const OPCIONES_PRODUCTO = [
-    { valor: "", texto: "Selecciona un producto..." },
-    ...productos.map((producto) => ({ valor: producto.nombre, texto: producto.nombre }))
-];
+function opcionesDesde(productos) {
+    return [OPCION_VACIA, ...productos.map((producto) => ({ valor: producto.nombre, texto: producto.nombre }))];
+}
 
 export function useResenas() {
     const [resenas, setResenas] = useState(leerResenas);
     const [valores, setValores] = useState(VALORES_INICIALES);
+    const [opcionesProducto, setOpcionesProducto] = useState([OPCION_VACIA]);
+
+    // Carga los productos del backend para el selector (con respaldo local)
+    useEffect(() => {
+        let activo = true;
+
+        cargarProductos()
+            .then((lista) => {
+                if (activo) setOpcionesProducto(opcionesDesde(lista));
+            })
+            .catch(() => {
+                if (activo) setOpcionesProducto(opcionesDesde(productosRespaldo));
+            });
+
+        return () => {
+            activo = false;
+        };
+    }, []);
 
     function cambiarCampo(campo, valor) {
         setValores((anteriores) => ({ ...anteriores, [campo]: valor }));
@@ -41,7 +59,7 @@ export function useResenas() {
     return {
         resenas,
         valores,
-        opcionesProducto: OPCIONES_PRODUCTO,
+        opcionesProducto,
         opcionesPuntuacion: OPCIONES_PUNTUACION,
         cambiarCampo,
         enviar

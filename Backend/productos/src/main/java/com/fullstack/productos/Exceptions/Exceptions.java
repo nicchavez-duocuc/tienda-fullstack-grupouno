@@ -47,4 +47,13 @@ public class Exceptions {
         // Retornamos 404
         return ResponseEntity.status(404).body(error);
     }
+
+    // Errores de negocio del frontend (400/403/404/409 de los servicios).
+    // Devuelve {"mensaje": "..."} para que el frontend lo muestre al usuario
+    @ExceptionHandler(org.springframework.web.server.ResponseStatusException.class)
+    public ResponseEntity<Map<String, String>> handleResponseStatus(org.springframework.web.server.ResponseStatusException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("mensaje", ex.getReason() != null ? ex.getReason() : "Error en la petición");
+        return ResponseEntity.status(ex.getStatusCode()).body(error);
+    }
 }

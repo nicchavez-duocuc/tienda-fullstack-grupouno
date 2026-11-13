@@ -1,23 +1,21 @@
 // hooks/useLogin.jsx
-// Estado y lógica del formulario de inicio de sesión. Reemplaza el bloque
-// "1. LÓGICA DE LOGIN" de usuarios.js.
-//
-// Usa los servicios (buscar usuario y guardar la sesión). Cambio respecto al
-// original: cuando el correo o la clave son incorrectos, en vez de un alert()
-// el mensaje aparece bajo el formulario.
+// Estado y lógica del formulario de inicio de sesión. Ahora valida las
+// credenciales contra el backend (POST /api/v1/auth/login), guarda el token
+// JWT y los datos del usuario, y redirige según el rol de la cuenta.
 
 import { useState } from "react";
-import { iniciarSesion, guardarUsuarioActivo } from "../services/usuarios.jsx";
+import { iniciarSesionBackend, guardarSesion } from "../services/api.jsx";
 
 export function useLogin() {
     const [valores, setValores] = useState({ email: "", clave: "" });
     const [error, setError] = useState("");
+    const [cargando, setCargando] = useState(false);
 
     function cambiarCampo(campo, valor) {
         setValores((anteriores) => ({ ...anteriores, [campo]: valor }));
     }
 
-    function enviar(event) {
+    async function enviar(event) {
         event.preventDefault();
         setError("");
 
@@ -29,16 +27,29 @@ export function useLogin() {
             return;
         }
 
-        const usuario = iniciarSesion(correo, clave);
+        setCargando(true);
 
-        if (usuario) {
-            guardarUsuarioActivo(usuario);
-            alert(`¡Bienvenido ${usuario.nombre}!`);
-            window.location.href = "../visualizacion_productos/index.html";
-        } else {
-            setError("Correo o clave incorrectos.");
+        try {
+            const sesion = await iniciarSesionBackend(correo, clave);
+            guardarSesion(sesion);
+
+            const usuario = sesion.usuario || {};
+            const nombre = usuario.apodo || usuario.nombre || "Gamer";
+
+            alert(`¡Bienvenido ${nombre}!`);
+
+            // El ADMIN entra directo al panel; los demás vuelven a la tienda.
+            if (usuario.rol === "ADMIN") {
+                window.location.href = "../admin/dashboard/index.html";
+            } else {
+                window.location.href = "../visualizacion_productos/index.html";
+            }
+        } catch (e) {
+            setError(e?.message || "No se pudo iniciar sesión.");
+        } finally {
+            setCargando(false);
         }
     }
 
-    return { valores, error, cambiarCampo, enviar };
+    return { valores, error, cargando, cambiarCampo, enviar };
 }
