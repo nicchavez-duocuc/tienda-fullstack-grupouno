@@ -52,7 +52,7 @@ public class ProductoController {
 
     @Operation(summary = "Crear producto (ADMIN)", description = "400 si el código ya existe o la categoría no existe")
     @PostMapping
-    public ResponseEntity<Producto> crear(@RequestBody Producto producto) {
+    public ResponseEntity<Producto> crear(@Valid @RequestBody Producto producto) {
         return productoService.guardarProducto(producto)
                 .map(p -> ResponseEntity.status(HttpStatus.CREATED).body(p))
                 .orElseThrow(() -> new org.springframework.web.server.ResponseStatusException(
@@ -61,7 +61,7 @@ public class ProductoController {
 
     @Operation(summary = "Actualizar producto por código (ADMIN)")
     @PutMapping("/{codigo}")
-    public Producto actualizar(@PathVariable String codigo, @RequestBody Producto datos) {
+    public Producto actualizar(@PathVariable String codigo, @Valid @RequestBody Producto datos) {
         return productoService.actualizarProducto(codigo, datos);
     }
 

@@ -42,13 +42,13 @@ public class CategoriaController {
 
     @Operation(summary = "Crear una categoría (ADMIN)")
     @PostMapping
-    public ResponseEntity<Categoria> crear(@RequestBody Categoria categoria) {
+    public ResponseEntity<Categoria> crear(@Valid @RequestBody Categoria categoria) {
         return ResponseEntity.status(HttpStatus.CREATED).body(categoriaService.crearCategoria(categoria));
     }
 
     @Operation(summary = "Actualizar una categoría (ADMIN)")
     @PutMapping("/{id}")
-    public Categoria actualizar(@PathVariable Long id, @RequestBody Categoria datos) {
+    public Categoria actualizar(@PathVariable Long id, @Valid @RequestBody Categoria datos) {
         return categoriaService.actualizarCategoria(id, datos);
     }
 
