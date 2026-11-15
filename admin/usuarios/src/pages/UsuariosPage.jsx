@@ -92,6 +92,7 @@ export default function UsuariosPage() {
             setClave("");
             setRol("");
             await cargarUsuarios();
+            setError(""); // una operación exitosa borra errores anteriores
             alert("¡Perfil actualizado con éxito!");
         } catch (e) {
             if (e instanceof ErrorSesion) {

@@ -1,75 +1,110 @@
 // hooks/useCarrito.jsx
-// Estado y lógica del carrito: ítems, total y las acciones sobre ellos
-// (más, menos, eliminar, vaciar). Reemplaza a cargarCarrito(),
-// aumentarCantidad(), disminuirCantidad() y eliminarDelCarrito() del
-// script_carrito.js original.
+// Estado y lógica del carrito. El carrito ahora vive en el BASE DE DATOS:
+// es el pedido con estado PENDIENTE del usuario autenticado. Para usar el
+// carrito hay que iniciar sesión; sin sesión esta página se muestra vacía
+// y los mensajes de la página mismas avisan del carrito vacío.
 //
-// Usa los servicios (leer/guardar en localStorage, descuento Duoc y cálculo
-// de precios). Cada cambio actualiza la pantalla y localStorage a la vez.
+// Cada cambio (más, menos, eliminar, vaciar) se hace con una petición al
+// backend y el estado de React se sincroniza con la respuesta del servidor.
 
 import { useState, useEffect } from "react";
-import { CLAVE_CARRITO, leerCarrito, guardarCarrito, eliminarCarrito } from "../services/carrito.jsx";
+import { peticion, haySesion, borrarToken } from "../../../visualizacion_productos/src/services/api.jsx";
 import { esUsuarioDuoc } from "../services/usuarios.jsx";
 import { calcularPrecios } from "../services/precios.jsx";
 
+// Convierte un detalle del pedido en la forma de "ítem" que dibujaba la
+// página: los mismos campos de antes (nombre, precio ORIGINAL, cantidad...).
+export function detalleAItem(detalle) {
+    return {
+        ...detalle.producto,
+        precio: detalle.precioUnitario,
+        cantidad: detalle.cantidad
+    };
+}
+
 export function useCarrito() {
-    // El carrito vive en estado de React. Se inicializa UNA vez leyendo localStorage.
-    const [carrito, setCarrito] = useState(leerCarrito);
+    const [carrito, setCarrito] = useState([]);
 
     const esDuoc = esUsuarioDuoc();
 
-    // Si el carrito cambia en OTRA pestaña (por ejemplo agregas algo en la tienda),
-    // el navegador avisa con el evento "storage" y se refresca acá. Sin esto,
-    // esta pestaña podría pisar con datos viejos lo que agregaste en la tienda.
+    // Carga el carrito desde el backend al abrir la página
     useEffect(() => {
-        function alCambiarStorage(e) {
-            if (e.key === CLAVE_CARRITO || e.key === null) {
-                setCarrito(leerCarrito());
+        if (!haySesion()) return; // sin sesión: carrito vacío
+        async function cargar() {
+            try {
+                const pedido = await peticion("/carrito");
+                setCarrito((pedido.detalles || []).map(detalleAItem));
+            } catch (error) {
+                console.error("No se pudo cargar el carrito:", error.mensaje || error);
             }
         }
-        window.addEventListener("storage", alCambiarStorage);
-        return () => window.removeEventListener("storage", alCambiarStorage);
+        cargar();
     }, []);
 
     // Cada ítem con sus precios ya calculados, para que los componentes solo
-    // tengan que dibujarlos. (Esto NO se guarda en localStorage.)
+    // tengan que dibujarlos (igual que antes).
     const items = carrito.map((producto) => {
         const { precioBase, precioFinal } = calcularPrecios(producto, esDuoc);
         return { ...producto, precioBase, precioFinal, subtotal: precioFinal * producto.cantidad };
     });
 
-    // El total NO es un estado aparte: se calcula en cada render, así nunca
-    // puede quedar desincronizado.
     const total = items.reduce((acumulado, item) => acumulado + item.subtotal, 0);
 
-    // Actualiza la pantalla (estado) y guarda en localStorage en un solo paso
-    function actualizar(nuevoCarrito) {
-        setCarrito(nuevoCarrito);
-        guardarCarrito(nuevoCarrito);
+    // Vuelve a leer el carrito del backend después de cada cambio
+    async function refrescar() {
+        const pedido = await peticion("/carrito");
+        setCarrito((pedido.detalles || []).map(detalleAItem));
+    }
+
+    // Ejecuta la acción del backend y sincroniza el estado
+    async function actualizar(conPeticion) {
+        try {
+            const pedido = await conPeticion();
+            setCarrito((pedido.detalles || []).map(detalleAItem));
+        } catch (error) {
+            window.alert(error.mensaje || "No se pudo actualizar el carrito.");
+        }
     }
 
     function aumentarCantidad(codigo) {
-        actualizar(carrito.map((p) => (p.codigo === codigo ? { ...p, cantidad: p.cantidad + 1 } : p)));
+        const item = carrito.find((p) => p.codigo === codigo);
+        if (!item) return;
+        actualizar(() => peticion("/carrito/items/" + codigo, {
+            metodo: "PUT",
+            cuerpo: { codigo, cantidad: item.cantidad + 1 }
+        }));
     }
 
     function eliminarDelCarrito(codigo) {
-        actualizar(carrito.filter((p) => p.codigo !== codigo));
+        actualizar(() => peticion("/carrito/items/" + codigo, { metodo: "DELETE" }));
     }
 
     function disminuirCantidad(codigo) {
-        const producto = carrito.find((p) => p.codigo === codigo);
-        if (!producto) return;
+        const item = carrito.find((p) => p.codigo === codigo);
+        if (!item) return;
         // Igual que antes: si queda 1 y aprietas "-", se elimina del carrito
-        if (producto.cantidad > 1) {
-            actualizar(carrito.map((p) => (p.codigo === codigo ? { ...p, cantidad: p.cantidad - 1 } : p)));
+        if (item.cantidad > 1) {
+            actualizar(() => peticion("/carrito/items/" + codigo, {
+                metodo: "PUT",
+                cuerpo: { codigo, cantidad: item.cantidad - 1 }
+            }));
         } else {
             eliminarDelCarrito(codigo);
         }
     }
 
-    // Borra el carrito de localStorage y de la pantalla
+    // Borra el carrito completo en la base de datos
     function limpiarCarrito() {
-        eliminarCarrito();
+        actualizar(() => peticion("/carrito", { metodo: "DELETE" }));
+    }
+
+    // Acabamos con el pedido PENDIENTE: pasa a PAGADO en la base de datos (y
+    // se descuenta el stock). La próxima vez el carrito comienza en cero.
+    // OJO: la respuesta trae los ítems del pedido YA COMPRADO, así que NO se
+    // usan para actualizar el estado (antes eso dejaba el carrito lleno con lo
+    // comprado). Tras pagar, el carrito simplemente queda vacío.
+    async function finalizarCompra() {
+        await peticion("/carrito/finalizar", { metodo: "POST" });
         setCarrito([]);
     }
 
@@ -77,9 +112,12 @@ export function useCarrito() {
         items,
         total,
         esDuoc,
+        sinSesion: !haySesion(),
         aumentarCantidad,
         disminuirCantidad,
         eliminarDelCarrito,
-        limpiarCarrito
+        limpiarCarrito,
+        finalizarCompra,
+        borrarToken
     };
 }

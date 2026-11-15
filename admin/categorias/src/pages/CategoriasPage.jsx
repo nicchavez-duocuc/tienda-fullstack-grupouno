@@ -15,6 +15,7 @@ export default function CategoriasPage() {
     const [modalAbierto, setModalAbierto] = useState(false);
     const [editId, setEditId] = useState(null);
     const [nombre, setNombre] = useState("");
+    const [descripcion, setDescripcion] = useState("");
     const [error, setError] = useState("");
 
     async function cargarDatos() {
@@ -44,6 +45,7 @@ export default function CategoriasPage() {
     function abrirModal() {
         setEditId(null);
         setNombre("");
+        setDescripcion("");
         setError("");
         setModalAbierto(true);
     }
@@ -51,6 +53,10 @@ export default function CategoriasPage() {
     function editar(categoria) {
         setEditId(categoria.id);
         setNombre(categoria.nombre);
+        // Se carga la descripción actual: sin esto, renombrar una categoría
+        // borraba su descripción (el PUT siempre enviaba "" y el backend
+        // sobrescribe lo que recibe)
+        setDescripcion(categoria.descripcion || "");
         setError("");
         setModalAbierto(true);
     }
@@ -59,6 +65,8 @@ export default function CategoriasPage() {
         setModalAbierto(false);
         setEditId(null);
         setNombre("");
+        setDescripcion("");
+        setError("");
     }
 
     async function guardar(event) {
@@ -69,7 +77,7 @@ export default function CategoriasPage() {
         try {
             await pedir(`/categorias${editId ? "/" + editId : ""}`, {
                 method: editId ? "PUT" : "POST",
-                body: JSON.stringify({ nombre: nombreLimpio, descripcion: "" })
+                body: JSON.stringify({ nombre: nombreLimpio, descripcion: descripcion.trim() })
             });
             await cargarDatos();
             cerrarModal();
@@ -168,6 +176,15 @@ export default function CategoriasPage() {
                             placeholder="Ej: Realidad Virtual"
                             value={nombre}
                             onChange={(e) => setNombre(e.target.value)}
+                        />
+
+                        <label>Descripción (opcional):</label>
+                        <textarea
+                            id="descripcion-categoria"
+                            rows="2"
+                            placeholder="Ej: Consolas de todas las generaciones"
+                            value={descripcion}
+                            onChange={(e) => setDescripcion(e.target.value)}
                         />
 
                         {error && <p style={{ color: "#dc3545" }}>{error}</p>}
