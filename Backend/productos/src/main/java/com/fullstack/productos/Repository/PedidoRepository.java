@@ -12,8 +12,13 @@ import com.fullstack.productos.model.Pedido;
 @Repository
 public interface PedidoRepository extends JpaRepository<Pedido, Long> {
 
-    // El carrito del usuario = su pedido con estado PENDIENTE
-    Optional<Pedido> findByUsuarioIdAndEstado(Long usuarioId, String estado);
+    // El carrito del usuario = su pedido con estado PENDIENTE.
+    // findFirst (en vez de un unico resultado): si en una base de datos antigua
+    // quedaran dos carritos PENDIENTES para el mismo usuario, se toma el mas
+    // antiguo en lugar de lanzar NonUniqueResultException (que rompia todo el
+    // carrito con un error 500). El indice unico de la migracion V4 evita que
+    // se creen duplicados nuevos.
+    Optional<Pedido> findFirstByUsuarioIdAndEstadoOrderByIdAsc(Long usuarioId, String estado);
 
     // Todos los pedidos (para el vendedor y el administrador), del más nuevo al más viejo
     List<Pedido> findAllByOrderByFechaDesc();

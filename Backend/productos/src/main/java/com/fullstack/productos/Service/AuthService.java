@@ -53,7 +53,14 @@ public class AuthService {
         usuario.setAvatar("");
         usuario.setRol(ROL_DEFECTO);
 
-        return aRespuesta(usuarioRepository.save(usuario));
+        try {
+            return aRespuesta(usuarioRepository.save(usuario));
+        } catch (org.springframework.dao.DataIntegrityViolationException carrera) {
+            // Dos registros simultáneos con el mismo correo pueden pasar el
+            // chequeo de arriba a la vez; el UNIQUE de la BD detiene al segundo.
+            // Se responde el mismo 409 amigable en vez de un 500.
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "El correo ya está registrado.");
+        }
     }
 
     // Correo + clave correctos → devuelve el JWT y los datos del usuario
