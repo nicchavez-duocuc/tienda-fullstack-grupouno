@@ -1,11 +1,16 @@
 // services/usuarios.jsx
-// El usuario actual. Reemplaza a esUsuarioDuoc() de Script.js y a la lectura
-// del usuario que hacía usuarios.js para el header.
+// Sesión del usuario. Igual que antes: el marcador es la entrada
+// "usuarioActivo" de localStorage (ahora la guarda la página de Login cuando
+// el backend confirma el JWT). El nombre y el rol llegan del backend.
+// El descuento sigue dependiendo de que el correo termine en @duocuc.cl.
+
+import { haySesion } from "./api.jsx";
 
 // El usuario que inició sesión, o null si no hay sesión
 export function obtenerUsuarioActivo() {
     try {
-        return JSON.parse(localStorage.getItem("usuarioActivo"));
+        const usuario = JSON.parse(localStorage.getItem("usuarioActivo"));
+        return haySesion() ? usuario : null;
     } catch {
         return null;
     }
@@ -15,13 +20,12 @@ export function obtenerUsuarioActivo() {
 // 20% de descuento)
 export function esUsuarioDuoc() {
     try {
-        // 1. Revisar si hay sesión activa en usuarioActivo
         const usuarioActivo = JSON.parse(localStorage.getItem("usuarioActivo"));
         if (usuarioActivo && usuarioActivo.correo) {
             return usuarioActivo.correo.toLowerCase().endsWith("@duocuc.cl");
         }
 
-        // 2. Si no hay sesión activa, revisar la lista general UsuariosGamer
+        // Sin sesión activa: revisar la lista general UsuariosGamer
         const usuarios = JSON.parse(localStorage.getItem("UsuariosGamer")) || [];
         if (usuarios.length > 0) {
             const ultimo = usuarios[usuarios.length - 1];
@@ -31,4 +35,16 @@ export function esUsuarioDuoc() {
         // JSON dañado en localStorage: simplemente no se aplica descuento
     }
     return false;
+}
+
+// ¿Qué rol tiene la sesión activa? (ADMIN, VENDEDOR, COMPRADOR o null)
+export function obtenerRolActivo() {
+    const usuario = obtenerUsuarioActivo();
+    return usuario ? usuario.rol : null;
+}
+
+// Cerrar sesión: se limpian el token JWT y los datos del usuario
+export function cerrarSesion() {
+    localStorage.removeItem("jwtActivo");
+    localStorage.removeItem("usuarioActivo");
 }
