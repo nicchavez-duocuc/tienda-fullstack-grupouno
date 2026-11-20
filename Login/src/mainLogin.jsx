@@ -1,5 +1,5 @@
 // mainLogin.jsx
-// Busca #react-login-root en Inicio_Sesion.html y monta ahí LoginPage.
+// Busca #react-login-root en Inicio_Sesion.html y monta ahí la página completa.
 
 import React from "react";
 import ReactDOM from "react-dom/client";

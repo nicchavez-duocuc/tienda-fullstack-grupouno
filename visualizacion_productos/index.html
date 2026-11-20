@@ -12,9 +12,9 @@
         <div class="logo-container" style="display: flex; align-items: center; gap: 20px;">
             <h1 style="margin: 0;">LEVEL-UP GAMER</h1>
 
-            <button onclick="abrirModalImagen()" style="margin: 0; background-color: transparent; border: 2px solid #39FF14; color: #39FF14; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#39FF14'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#39FF14';">
-                🗺️ Ver Mapa
-            </button>
+            <!-- Antes acá iba el botón "Ver Mapa" con onclick="abrirModalImagen()".
+                 Ahora lo dibuja React (con su modal) dentro de este div. -->
+            <div id="react-mapa-root"></div>
 
             <a href="../blogs/blog.html" style="margin: 0; text-decoration: none; background-color: transparent; border: 2px solid #39FF14; color: #39FF14; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-size: 1rem; font-weight: bold; display: flex; align-items: center; gap: 8px; transition: all 0.3s ease;" onmouseover="this.style.backgroundColor='#39FF14'; this.style.color='#000';" onmouseout="this.style.backgroundColor='transparent'; this.style.color='#39FF14';">
                 📰 Blog
@@ -24,10 +24,10 @@
             <a href="../carrito/carrito.html" class="btn-primary" style="background-color: #39FF14; color: black; font-weight: bold; margin: 0;">
                 Ver Carrito 🛒
             </a>
-            <a href="../perfil/perfil.html" class="user-profile-widget" id="profile-link" title="Ir a mi perfil" style="margin: 0;">
-                <img id="header-avatar" src="https://ui-avatars.com/api/?name=Gamer&background=1E90FF&color=fff" alt="Perfil">
-                <span id="header-apodo">Gamer</span>
-            </a>
+            <!-- Antes acá iba la foto y el apodo del usuario, que actualizaba usuarios.js.
+                 Ahora los dibuja React. display: contents hace que este div no cuente
+                 como caja, así el enlace sigue alineado igual en el header. -->
+            <div id="react-usuario-root" style="display: contents"></div>
         </div>
 
     </header>
@@ -43,61 +43,16 @@
 
             <!--
                 Antes acá iban .search-container, .category-filters y
-                #product-list, todos armados a mano con innerHTML desde
-                Script.js. Ahora ese bloque completo lo dibuja React:
-                ProductGrid.jsx se monta dentro de este div.
+                #product-list, armados a mano desde Script.js. Ahora esta
+                sección (buscador, filtros, productos y sus modales) la
+                dibuja React dentro de este div.
             -->
             <div id="react-productos-root"></div>
         </section>
     </main>
-    <!-- seccion de reseñas y calificaciones -->
-        <section class="reviews-section">
-            <h3 style="text-align: center; color: #39FF14; margin-bottom: 25px;">💬 Reseñas y Calificaciones</h3>
-
-            <!-- formulario para dejar reseña -->
-            <div class="review-form-container">
-                <h4 style="color: #1E90FF; margin-bottom: 15px;">Deja tu opinión sobre un producto</h4>
-                <form id="form-resena" onsubmit="guardarResena(event)">
-                    <div class="form-group">
-                        <label for="resena-producto">Producto:</label>
-                        <select id="resena-producto" required>
-                            <option value="">Selecciona un producto...</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="resena-nombre">Tu Nombre / Apodo:</label>
-                        <input type="text" id="resena-nombre" placeholder="Ej: GamerPRO" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="resena-puntuacion">Calificación:</label>
-                        <select id="resena-puntuacion" required>
-                            <option value="5">⭐⭐⭐⭐⭐ (5/5 - Excelente)</option>
-                            <option value="4">⭐⭐⭐⭐☆ (4/5 - Muy bueno)</option>
-                            <option value="3">⭐⭐⭐☆☆ (3/5 - Regular)</option>
-                            <option value="2">⭐⭐☆☆☆ (2/5 - Mala)</option>
-                            <option value="1">⭐☆☆☆☆ (1/5 - Muy mala)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="resena-comentario">Comentario:</label>
-                        <textarea id="resena-comentario" rows="3" placeholder="¿Qué te pareció el producto que compraste?" required></textarea>
-                    </div>
-
-                    <button type="submit" style="background-color: #39FF14; color: black; font-weight: bold; width: 100%; border: none; padding: 12px; cursor: pointer; border-radius: 5px; font-size: 1rem; margin-top: 10px;">Publicar Reseña</button>
-                </form>
-            </div>
-
-            <!-- lista de reseñas publicadas -->
-            <div class="reviews-list-container" style="margin-top: 30px;">
-                <h4 style="color: #1E90FF; margin-bottom: 15px;">Opiniones de la Comunidad</h4>
-                <div id="lista-resenas" class="reviews-grid">
-                    <!-- se cargan dinamicamente con JavaScript -->
-                </div>
-            </div>
-        </section>
+    <!-- Reseñas y calificaciones: antes era HTML fijo manejado desde Script.js.
+         Ahora lo dibuja React dentro de este div. -->
+    <div id="react-resenas-root"></div>
 
     <footer>
         <p>&copy; 2024 LEVEL-UP GAMER. Todos los derechos reservados.</p>
@@ -116,69 +71,10 @@
         </div>
     </footer>
 
-    <!-- modal producto agregado -->
-    <div id="modal-agregado" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="color: #39FF14;">✅ Producto agregado al carro</h3>
-                <button class="close-modal" onclick="cerrarModal()">✕</button>
-            </div>
-            <div class="modal-body">
-                <img id="modal-img" src="" alt="Producto">
-                <div class="modal-details">
-                    <h4 id="modal-nombre">Nombre del Producto</h4>
-                    <p id="modal-precio" class="modal-price">$0</p>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-seguir" onclick="cerrarModal()">Seguir comprando</button>
-                <a href="../carrito/carrito.html" class="btn-ir-carro">Ir al carro</a>
-            </div>
-        </div>
-    </div>
+    <!-- Los modales de "producto agregado", "detalle del producto" y "mapa"
+         ya no están acá: los dibuja React cuando hacen falta. -->
 
-    <!-- modal detalle del producto -->
-    <div id="modal-detalle" class="modal-overlay">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 style="color: #1E90FF;">ℹ️ Detalle del Producto</h3>
-                <button class="close-modal" onclick="cerrarModalDetalle()">✕</button>
-            </div>
-            <div class="modal-body" style="flex-direction: column; align-items: flex-start;">
-                <img id="modal-detalle-img" src="" alt="Producto" style="width: 100%; height: 200px; object-fit: contain; margin-bottom: 15px; background: #fff; border-radius: 5px; padding: 10px;">
-                <h4 id="modal-detalle-nombre" style="color: #1E90FF; font-size: 1.3rem; margin-bottom: 5px;"></h4>
-                <p id="modal-detalle-categoria" style="color: #aaa; font-size: 0.9rem; margin-bottom: 12px;"></p>
-                <p id="modal-detalle-descripcion" style="line-height: 1.5; color: #ddd; margin-bottom: 15px;"></p>
-                <p id="modal-detalle-precio" class="modal-price" style="margin-top: 0;">$0</p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-seguir" onclick="cerrarModalDetalle()">Cerrar</button>
-                <button id="modal-detalle-btn-agregar" class="btn-ir-carro" style="border: none; cursor: pointer;">Añadir al Carrito</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- modal de imagen del mapa -->
-    <div id="modal-imagen-extra" class="modal-overlay">
-        <div class="modal-content" style="text-align: center; position: relative; padding: 30px 20px 20px; max-width: 600px;">
-            <!-- Botón de cierre X -->
-            <button class="close-modal" onclick="cerrarModalImagen()" style="position: absolute; top: 10px; right: 15px; font-size: 28px;">✕</button>
-
-            <h3 style="color: #39FF14; margin-bottom: 15px;">Promo Exclusiva</h3>
-            <!-- Imagen a mostrar -->
-            <img src="mapa_Level-UP.jpg" alt="Imagen Especial" style="width: 100%; border-radius: 8px; border: 1px solid #333;">
-        </div>
-    </div>
-
-    <!--
-        main.jsx debe cargarse ANTES de Script.js porque
-        productos.js (importado desde main.jsx) es quien define
-        window.productos, y agregarAlCarrito/verDetalle en Script.js lo
-        necesitan. type="module" ya se difiere automáticamente, pero para
-        estar seguros lo dejamos primero en el orden del documento.
-    -->
-    <script type="module" src="../visualizacion_productos/src/main.jsx"></script>
-    <script src="../visualizacion_productos/Script.js"></script>
-    <script src="../Login/usuarios.js"></script>
+    <!-- Todo el JavaScript de esta página es React (src/main.jsx). -->
+    <script type="module" src="./src/main.jsx"></script>
 </body>
 </html>

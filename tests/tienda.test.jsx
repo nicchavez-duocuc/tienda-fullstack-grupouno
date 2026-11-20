@@ -1,89 +1,168 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-// --- FUNCIONES AUXILIARES A PROBAR ---
-const agregarAlCarrito = (carrito, producto) => [...carrito, producto];
-const calcularTotal = (carrito) => carrito.reduce((sum, item) => sum + item.precio, 0);
-const vaciarCarrito = () => [];
-const validarLogin = (email, password) => email.includes('@') && password.length >= 6;
-const registrarUsuario = (usuarios, nuevoUsuario) => {
-  if (usuarios.some(u => u.email === nuevoUsuario.email)) {
-    throw new Error('El usuario ya existe');
-  }
-  return [...usuarios, nuevoUsuario];
-};
+// Importar directamente los servicios reales del proyecto
+import { calcularEdad } from '../Login/src/services/edad.jsx';
+import {
+  CLAVE_USUARIOS,
+  CLAVE_USUARIO_ACTIVO,
+  obtenerUsuarios,
+  guardarUsuarioActivo,
+  iniciarSesion,
+  registrarUsuario
+} from '../Login/src/services/usuarios.jsx';
+import {
+  CLAVE_CARRITO,
+  leerCarrito,
+  guardarCarrito,
+  eliminarCarrito
+} from '../carrito/src/services/carrito.jsx';
+import {
+  FACTOR_DUOC,
+  calcularPrecios
+} from '../carrito/src/services/precios.jsx';
 
-describe('Suite de 10 Pruebas Unitarias del Proyecto Fullstack', () => {
+describe('Suite Completa de Pruebas Unitarias - Servicios React', () => {
 
   beforeEach(() => {
+    // Limpiar localStorage antes de cada prueba para aislar los resultados
     localStorage.clear();
   });
 
-  // --- CARRITO ---
-  it('1. Debe agregar un producto al carrito correctamente', () => {
-    const carrito = [];
-    const producto = { id: 1, nombre: 'Polera', precio: 10000 };
-    const resultado = agregarAlCarrito(carrito, producto);
-    expect(resultado).toHaveLength(1);
-    expect(resultado[0].nombre).toBe('Polera');
+
+  // VALIDACIÓN DE EDAD Y REGISTRO 
+
+  describe('1. Servicio de Edad y Registro (edad.jsx y usuarios.jsx)', () => {
+
+    it('1. Debe calcular correctamente la edad considerando día y mes de nacimiento', () => {
+      // Usamos una fecha fija de hace 20 años exactos
+      const hoy = new Date();
+      const anio = hoy.getFullYear() - 20;
+      const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+      const dia = String(hoy.getDate()).padStart(2, '0');
+
+      const edad = calcularEdad(`${anio}-${mes}-${dia}`);
+      expect(edad).toBe(20);
+    });
+
+    it('2. Debe registrar un nuevo usuario, guardarlo en UsuariosGamer y dejarlo como sesión activa', () => {
+      const datosRegistro = {
+        nombre: 'Sebastian',
+        apellido: 'Perez',
+        fecha: '2000-05-15',
+        correo: 'seba@duocuc.cl',
+        clave: 'password123'
+      };
+
+      const creado = registrarUsuario(datosRegistro);
+
+      expect(creado.nombre).toBe('Sebastian Perez');
+      expect(creado.apodo).toBe('Sebastian');
+      expect(obtenerUsuarios()).toHaveLength(1);
+
+      const activo = JSON.parse(localStorage.getItem(CLAVE_USUARIO_ACTIVO));
+      expect(activo.correo).toBe('seba@duocuc.cl');
+    });
+
+    it('3. Debe devolver un arreglo vacío si localStorage tiene datos corruptos o está vacío', () => {
+      expect(obtenerUsuarios()).toEqual([]);
+
+      localStorage.setItem(CLAVE_USUARIOS, '{json_invalido');
+      expect(obtenerUsuarios()).toEqual([]);
+    });
+
   });
 
-  it('2. Debe calcular correctamente el total a pagar del carrito', () => {
-    const carrito = [
-      { id: 1, precio: 10000 },
-      { id: 2, precio: 15000 },
-    ];
-    const total = calcularTotal(carrito);
-    expect(total).toBe(25000);
+
+  //  AUTENTICACIÓN E INICIO DE SESIÓN 
+
+  describe('2. Servicio de Autenticación (usuarios.jsx)', () => {
+
+    it('4. Debe iniciar sesión exitosamente si el correo y la contraseña coinciden', () => {
+      registrarUsuario({
+        nombre: 'Gamer',
+        apellido: 'Pro',
+        fecha: '1999-01-01',
+        correo: 'gamer@test.com',
+        clave: 'secret123'
+      });
+
+      const usuarioEncontrado = iniciarSesion('gamer@test.com', 'secret123');
+      expect(usuarioEncontrado).not.toBeNull();
+      expect(usuarioEncontrado.correo).toBe('gamer@test.com');
+    });
+
+    it('5. Debe devolver null si las credenciales son incorrectas', () => {
+      registrarUsuario({
+        nombre: 'Gamer',
+        apellido: 'Pro',
+        fecha: '1999-01-01',
+        correo: 'gamer@test.com',
+        clave: 'secret123'
+      });
+
+      const resultado = iniciarSesion('gamer@test.com', 'claveErronea');
+      expect(resultado).toBeNull();
+    });
+
   });
 
-  it('3. Debe retornar 0 al calcular el total de un carrito vacío', () => {
-    const total = calcularTotal([]);
-    expect(total).toBe(0);
+
+  // PERSISTENCIA DEL CARRITO 
+
+  describe('3. Servicio de Carrito de Compras (carrito.jsx)', () => {
+
+    it('6. Debe devolver un carrito vacío si no hay productos guardados en localStorage', () => {
+      expect(leerCarrito()).toEqual([]);
+    });
+
+    it('7. Debe guardar y leer correctamente los productos agregados al carrito', () => {
+      const productosMock = [
+        { codigo: 101, nombre: 'Teclado Mecánico', precio: 35000, cantidad: 1 },
+        { codigo: 102, nombre: 'Mouse Gamer', precio: 20000, cantidad: 2 }
+      ];
+
+      guardarCarrito(productosMock);
+
+      const carritoLeido = leerCarrito();
+      expect(carritoLeido).toHaveLength(2);
+      expect(carritoLeido[0].nombre).toBe('Teclado Mecánico');
+      expect(carritoLeido[1].cantidad).toBe(2);
+    });
+
+    it('8. Debe eliminar por completo la clave carritoGamer al vaciar o pagar el carrito', () => {
+      guardarCarrito([{ codigo: 101, nombre: 'Audífonos', precio: 25000, cantidad: 1 }]);
+      expect(localStorage.getItem(CLAVE_CARRITO)).not.toBeNull();
+
+      eliminarCarrito();
+
+      expect(localStorage.getItem(CLAVE_CARRITO)).toBeNull();
+      expect(leerCarrito()).toEqual([]);
+    });
+
   });
 
-  it('4. Debe vaciar todos los elementos del carrito', () => {
-    const carrito = [{ id: 1, precio: 5000 }];
-    const carritoVacio = vaciarCarrito();
-    expect(carritoVacio).toHaveLength(0);
-  });
 
-  // --- LOCALSTORAGE ---
-  it('5. Debe guardar datos del carrito en el localStorage', () => {
-    const carritoData = [{ id: 1, nombre: 'Zapatillas' }];
-    localStorage.setItem('carrito', JSON.stringify(carritoData));
-    const recuperado = JSON.parse(localStorage.getItem('carrito'));
-    expect(recuperado).toEqual(carritoData);
-  });
+  //  CÁLCULO DE PRECIOS Y DESCUENTO DUOC 
 
-  it('6. Debe persistir la sesión del usuario en localStorage', () => {
-    localStorage.setItem('usuarioLogueado', JSON.stringify({ email: 'test@correo.com' }));
-    const sesion = JSON.parse(localStorage.getItem('usuarioLogueado'));
-    expect(sesion.email).toBe('test@correo.com');
-  });
+  describe('4. Servicio de Precios y Descuentos (precios.jsx)', () => {
 
-  // --- LOGIN Y AUTENTICACIÓN ---
-  it('7. Debe validar exitosamente credenciales correctas de login', () => {
-    const esValido = validarLogin('usuario@gmail.com', '123456');
-    expect(esValido).toBe(true);
-  });
+    it('9. Debe mantener el precio base sin descuento cuando el usuario no es Duoc', () => {
+      const producto = { nombre: 'Monitor 144Hz', precio: 150000 };
+      const { precioBase, precioFinal } = calcularPrecios(producto, false);
 
-  it('8. Debe rechazar contraseñas con menos de 6 caracteres en el login', () => {
-    const esValido = validarLogin('usuario@gmail.com', '1234');
-    expect(esValido).toBe(false);
-  });
+      expect(precioBase).toBe(150000);
+      expect(precioFinal).toBe(150000);
+    });
 
-  // --- REGISTRO DE USUARIOS ---
-  it('9. Debe registrar un nuevo usuario exitosamente', () => {
-    const usuarios = [];
-    const nuevo = { email: 'nuevo@correo.com', pass: '123456' };
-    const resultado = registrarUsuario(usuarios, nuevo);
-    expect(resultado).toHaveLength(1);
-  });
+    it('10. Debe aplicar el 20% de descuento (FACTOR_DUOC) cuando es usuario Duoc', () => {
+      const producto = { nombre: 'Silla Gamer', precio: 100000 };
+      const { precioBase, precioFinal } = calcularPrecios(producto, true);
 
-  it('10. Debe lanzar un error al intentar registrar un email duplicado', () => {
-    const usuarios = [{ email: 'existente@correo.com', pass: '123456' }];
-    const duplicado = { email: 'existente@correo.com', pass: '654321' };
-    expect(() => registrarUsuario(usuarios, duplicado)).toThrow('El usuario ya existe');
+      expect(FACTOR_DUOC).toBe(0.8);
+      expect(precioBase).toBe(100000);
+      expect(precioFinal).toBe(80000);
+    });
+
   });
 
 });

@@ -32,7 +32,7 @@ export default function TarjetaProducto({ producto, esDuoc, onVerDetalle, onAgre
             />
             <Titulo>{producto.nombre}</Titulo>
             <Texto>Categoría: {producto.categoria}</Texto>
-            <PrecioProducto precio={producto.precio} esDuoc={esDuoc} />
+            <PrecioProducto precio={producto.precio} precioDescuento={producto.precioDescuento} esDuoc={esDuoc} />
             <Boton estilo={ESTILO_BOTON_AGREGAR} onClick={() => onAgregar(producto.codigo)}>
                 Añadir al Carrito
             </Boton>

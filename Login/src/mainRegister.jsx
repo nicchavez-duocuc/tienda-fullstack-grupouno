@@ -1,5 +1,5 @@
 // mainRegister.jsx
-// Busca #react-register-root en registrar.html y monta ahí RegistroPage.
+// Busca #react-register-root en registrar.html y monta ahí la página completa.
 
 import React from "react";
 import ReactDOM from "react-dom/client";

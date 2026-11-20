@@ -1,18 +1,20 @@
 // PÁGINA: CarritoPage
-// Conecta el carrito (useCarrito) y el modal (useModalConfirmacion) con las
-// piezas visuales. Acá viven las dos decisiones propias de esta página:
-// qué pasa al "Vaciar Carrito" y qué pasa al "Proceder al Pago"
-// (reemplazan a vaciarCarrito() y procederPago() del script original).
+// La página completa del carrito. Conecta el carrito (useCarrito) y el modal
+// (useModalConfirmacion) con las piezas visuales. Acá viven las dos
+// decisiones propias de esta página: qué pasa al "Vaciar Carrito" y qué pasa
+// al "Proceder al Pago" (reemplazan a vaciarCarrito() y procederPago() del
+// script original).
 
-import { useCarrito } from "../hooks/useCarrito.js";
-import { useModalConfirmacion } from "../hooks/useModalConfirmacion.js";
+import { useCarrito } from "../hooks/useCarrito.jsx";
+import { useModalConfirmacion } from "../hooks/useModalConfirmacion.jsx";
 import PlantillaCarrito from "../components/templates/PlantillaCarrito.jsx";
+import EncabezadoCarrito from "../components/organisms/EncabezadoCarrito.jsx";
 import ListaCarrito from "../components/organisms/ListaCarrito.jsx";
 import ResumenCarrito from "../components/organisms/ResumenCarrito.jsx";
 import ModalConfirmacion from "../components/organisms/ModalConfirmacion.jsx";
 
 export default function CarritoPage() {
-    const { items, total, esDuoc, aumentarCantidad, disminuirCantidad, eliminarDelCarrito, limpiarCarrito } =
+    const { items, total, esDuoc, sinSesion, aumentarCantidad, disminuirCantidad, eliminarDelCarrito, limpiarCarrito, finalizarCompra } =
         useCarrito();
     const { modal, abrirModal, cerrarModal, confirmarModal } = useModalConfirmacion();
 
@@ -62,8 +64,14 @@ export default function CarritoPage() {
             colorFondo: "#39FF14",
             colorTexto: "black",
             esAlerta: false,
-            accion: () => {
-                limpiarCarrito();
+            accion: async () => {
+                try {
+                    await finalizarCompra();
+                } catch (error) {
+                    // El modal de error ya maneja el catch dentro del hook
+                    alert(error.mensaje || "No se pudo procesar la compra.");
+                    return;
+                }
                 abrirModal({
                     mensaje: "¡Pago procesado con éxito! Gracias por elegir LEVEL-UP GAMER.",
                     icono: "✅",
@@ -79,14 +87,26 @@ export default function CarritoPage() {
 
     return (
         <PlantillaCarrito
+            encabezado={<EncabezadoCarrito />}
+            titulo="Tu Carrito de Compras 🛒"
             lista={
-                <ListaCarrito
-                    items={items}
-                    esDuoc={esDuoc}
-                    onAumentar={aumentarCantidad}
-                    onDisminuir={disminuirCantidad}
-                    onEliminar={eliminarDelCarrito}
-                />
+                <>
+                    {/* Sin sesión el carrito de la BD no es accesible: decirlo
+                        en vez de mostrar el "carrito vacío" de siempre */}
+                    {sinSesion && (
+                        <p style={{ textAlign: "center", padding: 20, fontWeight: "bold" }}>
+                            Inicia sesión para ver tu carrito de compras.{" "}
+                            <a href="../Login/Inicio_Sesion.html">Ir a iniciar sesión</a>
+                        </p>
+                    )}
+                    <ListaCarrito
+                        items={items}
+                        esDuoc={esDuoc}
+                        onAumentar={aumentarCantidad}
+                        onDisminuir={disminuirCantidad}
+                        onEliminar={eliminarDelCarrito}
+                    />
+                </>
             }
             resumen={<ResumenCarrito total={total} onVaciar={vaciarCarrito} onPagar={procederPago} />}
             modal={<ModalConfirmacion modal={modal} onCerrar={cerrarModal} onConfirmar={confirmarModal} />}
