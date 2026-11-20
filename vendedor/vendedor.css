@@ -1,0 +1,33 @@
+body { font-family: Arial, sans-serif; background: #f4f4f9; margin: 0; padding: 20px; color: #333; }
+h1 { color: #222; margin-top: 0; }
+.container { max-width: 1100px; margin: auto; background: white; padding: 24px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+.topbar { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+.tab-btn { background: #e9ecef; color: #333; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+.tab-btn.active { background: #007bff; color: white; }
+.resumen-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+.resumen-card { background: #f8f9fa; border: 1px solid #e2e6ea; border-radius: 6px; padding: 15px; }
+.resumen-card span { font-size: 13px; color: #666; display: block; }
+.resumen-card strong { font-size: 22px; color: #222; }
+.btn { background: #28a745; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; font-weight: bold; }
+.btn:hover { background: #218838; }
+.btn-danger { background: #dc3545; }
+.btn-danger:hover { background: #c82333; }
+.btn-edit { background: #007bff; }
+.btn-edit:hover { background: #0056b3; }
+.btn-secondary { background: #6c757d; }
+.btn-secondary:hover { background: #5a6268; }
+table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
+th { background: #007bff; color: white; }
+img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; }
+input, textarea, select { width: 100%; padding: 8px; margin: 5px 0 15px 0; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+select.select-estado { width: auto; margin: 0; padding: 5px 8px; font-weight: bold; }
+.badge { padding: 4px 8px; border-radius: 12px; font-size: 12px; font-weight: bold; display: inline-block; }
+.badge-disponible { background: #d4edda; color: #155724; }
+.badge-pausado { background: #fff3cd; color: #856404; }
+.badge-agotado { background: #f8d7da; color: #721c24; }
+.modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+.modal-content { background: white; padding: 20px; border-radius: 8px; width: 420px; max-height: 90vh; overflow-y: auto; }
+.actions { display: flex; gap: 6px; align-items: center; }

@@ -1,0 +1,9 @@
+ALTER TABLE producto ADD COLUMN id_vendedor INT NULL;
+ALTER TABLE producto ADD COLUMN estado VARCHAR(20) NOT NULL DEFAULT 'DISPONIBLE';
+
+UPDATE producto
+SET id_vendedor = (
+    SELECT id FROM usuario 
+    ORDER BY CASE WHEN rol = 'VENDEDOR' THEN 0 ELSE 1 END, id ASC 
+    LIMIT 1
+);
