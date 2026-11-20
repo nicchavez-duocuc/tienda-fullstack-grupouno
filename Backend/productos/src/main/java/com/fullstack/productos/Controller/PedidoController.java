@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fullstack.productos.Service.PedidoService;
+import com.fullstack.productos.dto.VentaVendedorDTO;
 import com.fullstack.productos.model.DetallePedido;
 import com.fullstack.productos.model.Pedido;
 
@@ -32,6 +33,12 @@ public class PedidoController {
     @GetMapping
     public List<Pedido> listar() {
         return pedidoService.listarPedidos();
+    }
+
+    @Operation(summary = "Listar ventas confirmadas de los productos de un vendedor")
+    @GetMapping("/vendedor/{idVendedor}")
+    public List<VentaVendedorDTO> listarVentasPorVendedor(@PathVariable Integer idVendedor) {
+        return pedidoService.listarVentasPorVendedor(idVendedor);
     }
 
     @Operation(summary = "Ver un pedido con sus detalles")

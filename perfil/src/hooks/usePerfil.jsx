@@ -43,7 +43,23 @@ export function usePerfil() {
 
     // Al elegir una foto: se ve al instante y, cuando termina de leerse, queda lista para guardar
     function cambiarAvatar(archivo) {
+        // Tope de 2 MB: un avatar es un data-URI base64 que viaja al backend y
+        // se guarda también en localStorage; una foto de varios MB llenaba la
+        // cuota de localStorage y hacía fallar el guardado con un error críptico
+        if (archivo.size > 2 * 1024 * 1024) {
+            setError("La foto no puede pesar más de 2 MB.");
+            return;
+        }
+        setError("");
+
+        // Liberar la vista previa anterior (blob URL) para no acumular memoria
+        const vistaPreviaAnterior = avatar.vistaPrevia;
+
         setAvatar((anterior) => ({ ...anterior, vistaPrevia: URL.createObjectURL(archivo) }));
+        if (vistaPreviaAnterior && vistaPreviaAnterior.startsWith("blob:")) {
+            URL.revokeObjectURL(vistaPreviaAnterior);
+        }
+
         leerArchivoComoBase64(archivo).then((base64) => setAvatar((anterior) => ({ ...anterior, base64 })));
     }
 

@@ -21,6 +21,7 @@ const FORMULARIO_VACIO = {
 
 export default function ProductosPage() {
     const [catalogo, setCatalogo] = useState([]);
+    const [categorias, setCategorias] = useState([]);
     const [filtro, setFiltro] = useState("");
     const [modalAbierto, setModalAbierto] = useState(false);
     const [editCodigo, setEditCodigo] = useState(null);
@@ -29,8 +30,15 @@ export default function ProductosPage() {
 
     async function cargarDatos() {
         try {
-            const lista = await pedir("/productos");
+            // Productos del inventario y el listado de categorias ya creadas
+            // (GET /api/v1/categorias): de aca sale el selector del formulario,
+            // para no tener que escribir el nombre de la categoria a mano.
+            const [lista, listaCategorias] = await Promise.all([
+                pedir("/productos"),
+                pedir("/categorias")
+            ]);
             setCatalogo(lista || []);
+            setCategorias(listaCategorias || []);
             setError("");
         } catch (e) {
             if (e instanceof ErrorSesion) {
@@ -52,6 +60,20 @@ export default function ProductosPage() {
             (p) => p.nombre.toLowerCase().includes(texto) || p.codigo.toLowerCase().includes(texto)
         );
     }, [catalogo, filtro]);
+
+    // Opciones del selector de categorias. Si se edita un producto cuya
+    // categoria ya no aparece en el listado (la borraron del panel de
+    // categorias), se agrega igual para que no se pierda al guardar.
+    const opcionesCategoria = useMemo(() => {
+        const nombres = categorias
+            .map((c) => (typeof c === "string" ? c : c.nombre))
+            .filter(Boolean);
+
+        if (formulario.categoria && !nombres.includes(formulario.categoria)) {
+            nombres.unshift(formulario.categoria);
+        }
+        return nombres;
+    }, [categorias, formulario.categoria]);
 
     function cambiarCampo(campo, valor) {
         setFormulario((anterior) => ({ ...anterior, [campo]: valor }));
@@ -83,6 +105,7 @@ export default function ProductosPage() {
         setModalAbierto(false);
         setEditCodigo(null);
         setFormulario(FORMULARIO_VACIO);
+        setError("");
     }
 
     async function guardar(event) {
@@ -134,8 +157,9 @@ export default function ProductosPage() {
             <div className="container">
                 <h1>Panel CRUD • Productos Gamer</h1>
                 <p>
-                    Inventario conectado a la base de datos mediante <code>/api/v1/productos</code>. Para
-                    asignar una categoría, escribe el nombre exacto de una categoría ya creada.
+                    Inventario conectado a la base de datos mediante <code>/api/v1/productos</code>. Las
+                    categorías se eligen del listado ya creado (vienen de{" "}
+                    <code>/api/v1/categorias</code>); para crear una nueva, usa el panel de Categorías.
                 </p>
 
                 {error && <p style={{ color: "#dc3545", fontWeight: "bold" }}>{error}</p>}
@@ -234,13 +258,21 @@ export default function ProductosPage() {
                         />
 
                         <label>Categoría:</label>
-                        <input
-                            type="text"
+                        <select
                             id="categoria"
                             required
                             value={formulario.categoria}
                             onChange={(e) => cambiarCampo("categoria", e.target.value)}
-                        />
+                        >
+                            <option value="" disabled>
+                                Selecciona una categoría...
+                            </option>
+                            {opcionesCategoria.map((nombre) => (
+                                <option key={nombre} value={nombre}>
+                                    {nombre}
+                                </option>
+                            ))}
+                        </select>
 
                         <label>Precio ($):</label>
                         <input

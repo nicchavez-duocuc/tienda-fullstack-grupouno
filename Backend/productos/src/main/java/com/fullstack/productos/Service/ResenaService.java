@@ -51,7 +51,14 @@ public class ResenaService {
         resena.setComentario(comentario.trim());
         resena.setFecha(LocalDate.now());
 
-        return aRespuesta(resenaRepository.save(resena));
+        try {
+            return aRespuesta(resenaRepository.save(resena));
+        } catch (org.springframework.dao.DataIntegrityViolationException carrera) {
+            // Dos reseñas simultáneas del mismo usuario sobre el mismo producto
+            // pasan el chequeo de arriba a la vez; el UNIQUE (usuario, producto)
+            // de la BD detiene a la segunda. Mismo 409 amigable en vez de 500.
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Ya escribiste una reseña de este producto.");
+        }
     }
 
     // Borrar una reseña: solo su autor o el ADMIN

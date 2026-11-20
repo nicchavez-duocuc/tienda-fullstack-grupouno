@@ -62,10 +62,22 @@ export async function pedir(ruta, opciones = {}) {
     }
 
     if (!respuesta.ok) {
-        const mensaje =
-            (datos && (datos.mensaje || datos.error)) ||
-            `El servidor respondió con el código ${respuesta.status}.`;
-        throw new Error(mensaje);
+        // Mensaje legible según el formato de error del backend:
+        //   { mensaje: "..." }                      -> errores de negocio
+        //   { error: "..." }                        -> errores HTTP genéricos
+        //   { campo: "mensaje de validación", ... } -> errores de @Valid
+        let mensaje = null;
+        if (datos && typeof datos === "object") {
+            if (datos.mensaje || datos.error) {
+                mensaje = datos.mensaje || datos.error;
+            } else {
+                const primerCampo = Object.values(datos).find((valor) => typeof valor === "string" && valor);
+                if (primerCampo) mensaje = primerCampo;
+            }
+        }
+        if (!mensaje && typeof datos === "string" && datos) mensaje = datos;
+
+        throw new Error(mensaje || `El servidor respondió con el código ${respuesta.status}.`);
     }
 
     return datos;

@@ -74,9 +74,11 @@ public class SeguridadConfig {
                 .requestMatchers(HttpMethod.GET, "/api/v1/productos/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/categorias/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/resenas/**").permitAll()
+                // Cambiar estado del producto: ADMIN o VENDEDOR
+                .requestMatchers(HttpMethod.PUT, "/api/v1/productos/*/estado").hasAnyRole("ADMIN", "VENDEDOR")
                 // Manejo de productos y categorías: solo ADMIN
-                .requestMatchers(HttpMethod.POST, "/api/v1/productos/**").hasRole("ADMIN")
-                .requestMatchers(HttpMethod.PUT, "/api/v1/productos/**").hasRole("ADMIN")
+                .requestMatchers(HttpMethod.POST, "/api/v1/productos/**").hasAnyRole("ADMIN" , "VENDEDOR")
+                .requestMatchers(HttpMethod.PUT, "/api/v1/productos/**").hasAnyRole("ADMIN" , "VENDEDOR")
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/productos/**").hasRole("ADMIN")
                 .requestMatchers("/api/v1/categorias/**").hasRole("ADMIN")
                 // El usuario puede actualizar SU PROPIO perfil (apodo, avatar, clave)

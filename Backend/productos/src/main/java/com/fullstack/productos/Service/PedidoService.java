@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.fullstack.productos.Repository.DetallePedidoRepository;
 import com.fullstack.productos.Repository.PedidoRepository;
 import com.fullstack.productos.Repository.ProductoRepository;
+import com.fullstack.productos.dto.VentaVendedorDTO;
 import com.fullstack.productos.model.DetallePedido;
 import com.fullstack.productos.model.Pedido;
 import com.fullstack.productos.model.Producto;
@@ -37,21 +39,39 @@ public class PedidoService {
     // Devuelve el carrito del usuario. Si no tiene uno (o ya compró), crea uno nuevo
     @Transactional
     public Pedido obtenerCarrito(Usuario usuario) {
-        Pedido carrito = pedidoRepository.findByUsuarioIdAndEstado(usuario.getId(), Pedido.PENDIENTE)
-                .orElseGet(() -> {
-                    Pedido nuevo = new Pedido();
-                    nuevo.setUsuario(usuario);
-                    nuevo.setEstado(Pedido.PENDIENTE);
-                    nuevo.setFecha(LocalDateTime.now());
-                    nuevo.setTotal(0L);
-                    return pedidoRepository.save(nuevo);
-                });
+        Pedido carrito = pedidoRepository.findFirstByUsuarioIdAndEstadoOrderByIdAsc(usuario.getId(), Pedido.PENDIENTE)
+                .orElseGet(() -> crearCarrito(usuario));
         // Un carrito recién creado en ESTE pedido aún no trae lista de detalles
         // (queda null en memoria); sin esto agregar/vaciar explota con NPE
         if (carrito.getDetalles() == null) {
             carrito.setDetalles(new ArrayList<>());
         }
         return carrito;
+    }
+
+    // Crea el carrito a prueba de carreras: si dos peticiones llegan al mismo
+    // tiempo (doble clic en "Añadir al carrito", doble carga de la página),
+    // ambas intentan insertar un pedido PENDIENTE. El índice único de la
+    // migración V4 (un carrito PENDIENTE por usuario) hace fallar la segunda
+    // inserción; en ese caso se vuelve a leer el carrito que la otra petición
+    // creó, en lugar de explotar con un error 500.
+    private Pedido crearCarrito(Usuario usuario) {
+        Pedido nuevo = new Pedido();
+        nuevo.setUsuario(usuario);
+        nuevo.setEstado(Pedido.PENDIENTE);
+        nuevo.setFecha(LocalDateTime.now());
+        nuevo.setTotal(0L);
+
+        try {
+            // saveAndFlush: obliga a que la BD valide el índice único AHORA,
+            // dentro del try (save() solo escribiría al final de la transacción)
+            return pedidoRepository.saveAndFlush(nuevo);
+        } catch (DataIntegrityViolationException yaExiste) {
+            return pedidoRepository
+                    .findFirstByUsuarioIdAndEstadoOrderByIdAsc(usuario.getId(), Pedido.PENDIENTE)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                            "No se pudo crear el carrito de compras."));
+        }
     }
 
     // Agrega un producto (o suma cantidad si ya estaba), revisando el stock
@@ -133,9 +153,21 @@ public class PedidoService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "El carrito está vacío.");
         }
 
-        // Descuenta el stock de cada producto comprado
-        for (DetallePedido detalle : carrito.getDetalles()) {
-            Producto producto = detalle.getProducto();
+        // Se bloquean los productos en orden de código para que dos compras
+        // concurrentes tomen los locks en el mismo orden (evita deadlocks)
+        List<DetallePedido> ordenados = new ArrayList<>(carrito.getDetalles());
+        ordenados.sort((a, b) -> a.getProducto().getCodigo().compareTo(b.getProducto().getCodigo()));
+
+        // Descuenta el stock de cada producto comprado. El findByCodigoConLock
+        // toma un lock de escritura por fila: si otro usuario está comprando el
+        // mismo producto al mismo tiempo, esta transacción espera y después lee
+        // el stock real ya actualizado (ver ProductoRepository)
+        for (DetallePedido detalle : ordenados) {
+            Producto producto = productoRepository
+                    .findByCodigoConLock(detalle.getProducto().getCodigo())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                            "El producto " + detalle.getProducto().getCodigo() + " ya no existe."));
+
             long quedan = producto.getStock() - detalle.getCantidad();
             if (quedan < 0) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -154,6 +186,11 @@ public class PedidoService {
     // Todas las compras (no incluye carritos PENDIENTES)
     public List<Pedido> listarPedidos() {
         return pedidoRepository.listarComprasConUsuario();
+    }
+
+    // Historial de ventas confirmadas de los productos de un vendedor
+    public List<VentaVendedorDTO> listarVentasPorVendedor(Integer idVendedor) {
+        return detallePedidoRepository.listarVentasPorVendedor(idVendedor);
     }
 
     // Un pedido con sus detalles (visualizar el detalle de la orden)

@@ -38,6 +38,7 @@ public class Producto {
 
     // FK: cada producto pertenece a una categoría
     @NotNull
+    
     @ManyToOne(optional = false)
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
@@ -53,4 +54,10 @@ public class Producto {
 
     @Column(length = 1000)
     private String descripcion;
+
+    @Column(name = "id_vendedor")
+    private Integer idVendedor;
+
+    @Column(name = "estado", length = 20, nullable = false)
+    private String estado = "DISPONIBLE";
 }

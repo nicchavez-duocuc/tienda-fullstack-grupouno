@@ -7,11 +7,12 @@ import FormularioResena from "../components/organisms/FormularioResena.jsx";
 import ListaResenas from "../components/organisms/ListaResenas.jsx";
 
 export default function ResenasPage() {
-    const { resenas, valores, opcionesProducto, opcionesPuntuacion, cambiarCampo, enviar } = useResenas();
+    const { resenas, valores, opcionesProducto, opcionesPuntuacion, error, cambiarCampo, enviar } = useResenas();
 
     return (
         <PlantillaResenas
             titulo="💬 Reseñas y Calificaciones"
+            avisoError={error}
             formulario={
                 <FormularioResena
                     valores={valores}

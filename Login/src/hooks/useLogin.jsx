@@ -38,9 +38,11 @@ export function useLogin() {
 
             alert(`¡Bienvenido ${nombre}!`);
 
-            // El ADMIN entra directo al panel; los demás vuelven a la tienda.
+            // Redirección según el rol de la cuenta
             if (usuario.rol === "ADMIN") {
                 window.location.href = "../admin/dashboard/index.html";
+            } else if (usuario.rol === "VENDEDOR") {
+                window.location.href = "../vendedor/VendedorIndex.html";
             } else {
                 window.location.href = "../visualizacion_productos/index.html";
             }

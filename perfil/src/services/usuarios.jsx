@@ -25,11 +25,22 @@ function obtenerUsuarios() {
 
 // Guarda los cambios del perfil en los dos lugares: en la sesión activa y en
 // la lista general de usuarios (solo cambia al usuario con el mismo correo).
+// El guardado local es "best effort": el backend YA guardó los cambios; si
+// localStorage se queda sin espacio (p. ej. un avatar base64 muy grande), no
+// debe hacer parecer que la actualización falló.
 export function guardarPerfil(usuarioActualizado) {
-    const usuarios = obtenerUsuarios().map((usuario) =>
-        usuario.correo === usuarioActualizado.correo ? { ...usuario, ...usuarioActualizado } : usuario
-    );
+    try {
+        const usuarios = obtenerUsuarios().map((usuario) =>
+            usuario.correo === usuarioActualizado.correo ? { ...usuario, ...usuarioActualizado } : usuario
+        );
+        localStorage.setItem(CLAVE_USUARIOS, JSON.stringify(usuarios));
+    } catch {
+        // Cuota de localStorage agotada o datos corruptos: se ignora
+    }
 
-    localStorage.setItem(CLAVE_USUARIOS, JSON.stringify(usuarios));
-    localStorage.setItem(CLAVE_USUARIO_ACTIVO, JSON.stringify(usuarioActualizado));
+    try {
+        localStorage.setItem(CLAVE_USUARIO_ACTIVO, JSON.stringify(usuarioActualizado));
+    } catch {
+        // Ídem
+    }
 }

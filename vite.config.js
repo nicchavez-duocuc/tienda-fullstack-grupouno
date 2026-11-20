@@ -28,7 +28,8 @@ export default defineConfig({
         adminDashboard: resolve(raiz, 'admin/dashboard/index.html'),
         adminCategorias: resolve(raiz, 'admin/categorias/index.html'),
         adminProductos: resolve(raiz, 'admin/productos/index.html'),
-        adminUsuarios: resolve(raiz, 'admin/usuarios/index.html')
+        adminUsuarios: resolve(raiz, 'admin/usuarios/index.html'),
+        vendedor: resolve(raiz, 'vendedor/VendedorIndex.html')
       }
     }
   },

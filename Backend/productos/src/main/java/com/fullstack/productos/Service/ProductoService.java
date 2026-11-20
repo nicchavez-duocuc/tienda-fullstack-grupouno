@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.fullstack.productos.Repository.CategoriaRepository;
 import com.fullstack.productos.Repository.ProductoRepository;
 import com.fullstack.productos.model.Categoria;
 import com.fullstack.productos.model.Producto;
-import com.fullstack.productos.Repository.CategoriaRepository;
 
 @Service
 public class ProductoService {
@@ -27,7 +27,25 @@ public class ProductoService {
         return productoRepository.listarConCategoria();
     }
 
-    // Guardar (solo ADMIN). La categoría llega con su nombre (o id) desde el panel
+    // Lista los productos publicados por un vendedor específico
+    public List<Producto> listarPorVendedor(Integer idVendedor) {
+        return productoRepository.findByIdVendedorConCategoria(idVendedor);
+    }
+
+    // Cambia el estado de un producto verificando que pertenezca al vendedor
+    public Producto cambiarEstadoProducto(String codigo, Integer idVendedor, String nuevoEstado) {
+        Producto producto = productoRepository.findByCodigo(codigo)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
+
+        if (producto.getIdVendedor() == null || !producto.getIdVendedor().equals(idVendedor)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "No tienes permiso para modificar este producto");
+        }
+
+        producto.setEstado(nuevoEstado);
+        return productoRepository.save(producto);
+    }
+
+    // Guardar (ADMIN o VENDEDOR). La categoría llega con su nombre (o id) desde el panel
     public Optional<Producto> guardarProducto(Producto producto) {
         try {
             Optional<Producto> existe = productoRepository.findByCodigo(producto.getCodigo());
@@ -54,7 +72,7 @@ public class ProductoService {
         return productoRepository.findByCodigoConCategoria(codigo);
     }
 
-    // Actualizar (solo ADMIN)
+    // Actualizar (ADMIN o VENDEDOR)
     public Producto actualizarProducto(String codigo, Producto datosNuevos) {
 
         if (datosNuevos == null) {
@@ -87,6 +105,10 @@ public class ProductoService {
                 productoEnBD.setImagen(datosNuevos.getImagen());
                 productoEnBD.setDescripcion(datosNuevos.getDescripcion());
 
+                if (datosNuevos.getEstado() != null && !datosNuevos.getEstado().trim().isEmpty()) {
+                    productoEnBD.setEstado(datosNuevos.getEstado());
+                }
+
                 return productoRepository.save(productoEnBD);
             } else {
                 throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No existe un producto con el código " + codigo);
@@ -99,7 +121,7 @@ public class ProductoService {
         }
     }
 
-    // Eliminar por codigo (solo ADMIN). Falla con 409 si el producto está en pedidos
+    // Eliminar por codigo (ADMIN). Falla con 409 si el producto está en pedidos
     public boolean eliminarProductoPorCodigo(String codigo) {
         try {
             Producto productoExistente = productoRepository.findByCodigo(codigo).orElse(null);

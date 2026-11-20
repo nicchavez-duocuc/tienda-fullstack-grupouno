@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fullstack.productos.Service.ProductoService;
@@ -21,10 +22,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
-// GET público (la tienda lee el catálogo); crear/cambiar/borrar solo ADMIN.
-// La categoría viaja como {"categoria": {"nombre": "..."}} y el servicio la
-// valida contra la tabla categoria
-@Tag(name = "Productos", description = "Catálogo de productos: lectura pública, CRUD solo ADMIN")
+@Tag(name = "Productos", description = "Catálogo de productos: lectura pública, gestión ADMIN y VENDEDOR")
 @SecurityRequirement(name = "bearerAuth")
 @RestController
 @RequestMapping("/api/v1/productos")
@@ -42,6 +40,12 @@ public class ProductoController {
         return productoService.listarProductos();
     }
 
+    @Operation(summary = "Listar productos publicados por un vendedor")
+    @GetMapping("/vendedor/{idVendedor}")
+    public List<Producto> listarPorVendedor(@PathVariable Integer idVendedor) {
+        return productoService.listarPorVendedor(idVendedor);
+    }
+
     @Operation(summary = "Buscar producto por código (público)")
     @GetMapping("/{codigo}")
     public ResponseEntity<Producto> buscar(@PathVariable String codigo) {
@@ -50,7 +54,7 @@ public class ProductoController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @Operation(summary = "Crear producto (ADMIN)", description = "400 si el código ya existe o la categoría no existe")
+    @Operation(summary = "Crear producto (ADMIN o VENDEDOR)", description = "400 si el código ya existe o la categoría no existe")
     @PostMapping
     public ResponseEntity<Producto> crear(@Valid @RequestBody Producto producto) {
         return productoService.guardarProducto(producto)
@@ -59,10 +63,19 @@ public class ProductoController {
                         HttpStatus.CONFLICT, "El código " + producto.getCodigo() + " ya existe."));
     }
 
-    @Operation(summary = "Actualizar producto por código (ADMIN)")
+    @Operation(summary = "Actualizar producto por código (ADMIN o VENDEDOR)")
     @PutMapping("/{codigo}")
     public Producto actualizar(@PathVariable String codigo, @Valid @RequestBody Producto datos) {
         return productoService.actualizarProducto(codigo, datos);
+    }
+
+    @Operation(summary = "Cambiar estado de un producto (VENDEDOR)")
+    @PutMapping("/{codigo}/estado")
+    public Producto cambiarEstado(
+            @PathVariable String codigo,
+            @RequestParam Integer idVendedor,
+            @RequestParam String estado) {
+        return productoService.cambiarEstadoProducto(codigo, idVendedor, estado);
     }
 
     @Operation(summary = "Eliminar producto por código (ADMIN)", description = "Devuelve 409 si el producto está en pedidos o reseñas")
